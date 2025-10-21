@@ -1,0 +1,69 @@
+name: PHP 8.4 Upgrade Check & Fix
+
+# Allows manual trigger from GitHub Actions UI
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  php-compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Setup PHP 8.4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, curl, json, intl
+
+      # Install composer dependencies
+      - name: Install dependencies
+        run: |
+          composer require --dev "squizlabs/php_codesniffer"
+          composer require --dev "phpcompatibility/php-compatibility"
+          composer require --dev rector/rector
+
+      # Run PHPCompatibility sniff
+      - name: Check PHP compatibility
+        run: |
+          vendor/bin/phpcs -p ./ --standard=PHPCompatibility --runtime-set testVersion 8.4
+
+      # Run Rector to automatically fix PHP 8.x+ issues
+      - name: Apply Rector fixes
+        run: |
+          echo "<?php
+          declare(strict_types=1);
+          use Rector\Core\Configuration\Option;
+          use Rector\Set\ValueObject\SetList;
+          use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+
+          return static function (ContainerConfigurator \$containerConfigurator): void {
+              \$parameters = \$containerConfigurator->parameters();
+              \$parameters->set(Option::PATHS, [__DIR__]);
+              \$containerConfigurator->import(SetList::PHP_80);
+              \$containerConfigurator->import(SetList::PHP_81);
+              \$containerConfigurator->import(SetList::PHP_82);
+              \$containerConfigurator->import(SetList::PHP_83);
+              \$containerConfigurator->import(SetList::PHP_84);
+          };" > rector.php
+
+          vendor/bin/rector process
+
+      # Optional: Commit Rector fixes automatically
+      - name: Commit Rector changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Apply PHP 8.4 automated fixes via Rector" || echo "No changes to commit"
+          git push
