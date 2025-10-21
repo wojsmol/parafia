@@ -2,11 +2,13 @@
 global $theme_sidebars;
 $places = array();
 foreach ($theme_sidebars as $sidebar){
-    if ($sidebar['group'] !== 'bottom')
+    if ($sidebar['group'] !== 'bottom') {
         continue;
+    }
     $widgets = theme_get_dynamic_sidebar_data($sidebar['id']);
-    if (!is_array($widgets) || count($widgets) < 1)
+    if (!is_array($widgets) || count($widgets) < 1) {
         continue;
+    }
     $places[$sidebar['id']] = $widgets;
 }
 $place_count = count($places);

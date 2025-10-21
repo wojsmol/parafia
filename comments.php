@@ -8,8 +8,9 @@
  * Additional settings are available under the Appearance -> Theme Options -> Comments.
  *
  */
-if (!empty($_SERVER['SCRIPT_FILENAME']) && 'comments.php' == basename($_SERVER['SCRIPT_FILENAME']))
-	die('Please do not load this page directly. Thanks!');
+if (!empty($_SERVER['SCRIPT_FILENAME']) && 'comments.php' === basename((string) $_SERVER['SCRIPT_FILENAME'])) {
+    die('Please do not load this page directly. Thanks!');
+}
 	
 if (post_password_required()) {
 ?>
@@ -48,7 +49,7 @@ theme_ob_start();
 $args = array();
 if (theme_get_option('theme_comment_use_smilies')) {
 
-	function theme_comment_form_field_comment($form_field) {
+	function theme_comment_form_field_comment(string $form_field): string {
     locate_template(array('library/smiley.php'), true);
 		return theme_get_smilies_js() . '<p class="smilies">' . theme_get_smilies() . '</p>' . $form_field;
 	}

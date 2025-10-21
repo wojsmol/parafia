@@ -10,8 +10,9 @@ $theme_widgets_style = array(
 
 function theme_get_widget_style($id, $style = null) {
 
-	if (theme_is_vmenu_widget($id))
-		return 'vmenu';
+	if (theme_is_vmenu_widget($id)) {
+     return 'vmenu';
+ }
 
 	$result = theme_get_widget_meta_option($id, 'theme_widget_styles');
 	global $theme_widgets_style;
@@ -29,7 +30,7 @@ function theme_get_widget_style($id, $style = null) {
 	return $result;
 }
 
-function theme_set_widget_style($id, $style) {
+function theme_set_widget_style($id, $style): void {
 	global $theme_widgets_style;
 	if (!in_array($style, array_keys($theme_widgets_style))) {
 		$style = 'default';
@@ -37,7 +38,7 @@ function theme_set_widget_style($id, $style) {
 	theme_set_widget_meta_option($id, 'theme_widget_styles', $style);
 }
 
-function theme_widget_expand_control($id) {
+function theme_widget_expand_control($id): void {
 	global $wp_registered_widget_controls;
 	$controls = &$wp_registered_widget_controls[$id];
 	if (!is_array($controls['params'])) {
@@ -50,16 +51,16 @@ function theme_widget_expand_control($id) {
 	$controls['callback'] = 'theme_widget_extra_control';
 }
 
-function theme_update_widget_additional($instance) {
+function theme_update_widget_additional(array $instance): array {
 	global $theme_widget_meta_options;
 	foreach ($theme_widget_meta_options as $value) {
 		$id = theme_get_array_value($value, 'id');
-		$val = stripslashes(theme_get_array_value($_POST, $id));
+		$val = stripslashes((string) theme_get_array_value($_POST, $id));
 		$type = theme_get_array_value($value, 'type');
 		$options = theme_get_array_value($value, 'options');
 		switch ($type) {
 			case 'checkbox':
-				$val = ($val ? 1 : 0);
+				$val = ($val !== '' && $val !== '0' ? 1 : 0);
 				break;
 			case 'numeric':
 				$val = (int) $val;
@@ -74,9 +75,9 @@ function theme_update_widget_additional($instance) {
 	}
 	return $instance;
 }
-function theme_widget_process_control() {
+function theme_widget_process_control(): void {
 	global $wp_registered_widget_controls;
-	if ('post' == strtolower($_SERVER['REQUEST_METHOD']) && isset($_POST['widget-id'])) {
+	if ('post' === strtolower((string) $_SERVER['REQUEST_METHOD']) && isset($_POST['widget-id'])) {
 		theme_widget_expand_control($_POST['widget-id']);
 		return;
 	}
@@ -85,10 +86,9 @@ function theme_widget_process_control() {
 	}
 }
 
-function theme_widget_extra_control() {
+function theme_widget_extra_control(...$params): ?false {
 	global $wp_registered_widget_controls, $theme_widgets_style, $theme_widget_meta_options;
 	$_theme_widget_meta_options = $theme_widget_meta_options;
-	$params = func_get_args();
 	$widget_id = $params[count($params) - 1]; // see theme_widget_expand_control func
 	$widget_controls = theme_get_array_value($wp_registered_widget_controls, $widget_id, array());
 	if (isset($widget_controls['callback_redirect'])) {
@@ -97,7 +97,7 @@ function theme_widget_extra_control() {
 			call_user_func_array($callback, $params);
 		}
 	}
-	if (!preg_match('/^(.*[^-])-([0-9]+)$/', $widget_id, $matches) || !isset($matches[1]) || !isset($matches[2])) {
+	if (!preg_match('/^(.*[^-])-(\d+)$/', (string) $widget_id, $matches) || !isset($matches[1]) || !isset($matches[2])) {
 		return false;
 	}
 	$id = $matches[1] . '-' . $params[0]['number'];
@@ -119,18 +119,20 @@ function theme_widget_extra_control() {
 	<h3 style="margin-bottom:3px;"><?php _e('Theme Options', THEME_NS); ?></h3>
 	<?php
 	theme_print_meta_box($id, $_theme_widget_meta_options);
+ return null;
 }
 
 // widgets
 
 class VMenuWidget extends WP_Widget {
 
-	function VMenuWidget() {
+	function VMenuWidget(): void {
 		$widget_ops = array('classname' => 'vmenu', 'description' => __('Use this widget to add one of your custom menus as a widget.', THEME_NS));
 		parent::WP_Widget(false, __('Vertical Menu', THEME_NS), $widget_ops);
 	}
 
-	function widget($args, $instance) {
+	#[\Override]
+ function widget($args, $instance): void {
 		extract($args);
 		$title = apply_filters('widget_title', $instance['title'], $instance, $this->id_base);
 		echo $before_widget;
@@ -144,14 +146,16 @@ class VMenuWidget extends WP_Widget {
 		echo $after_widget;
 	}
 
-	function update($new_instance, $old_instance) {
-		$instance['title'] = strip_tags($new_instance['title']);
+	#[\Override]
+ function update($new_instance, $old_instance) {
+		$instance['title'] = strip_tags((string) $new_instance['title']);
 		$instance['source'] = $new_instance['source'];
 		$instance['nav_menu'] = (int) $new_instance['nav_menu'];
 		return $instance;
 	}
 
-	function form($instance) {
+	#[\Override]
+ function form($instance): void {
 		//Defaults
 		$instance = wp_parse_args((array) $instance, array('title' => '', 'source' => 'Pages', 'nav_menu' => ''));
 		$title = esc_attr($instance['title']);
@@ -181,7 +185,9 @@ class VMenuWidget extends WP_Widget {
 		?>
 		</select>
 		</p>
-		<p class="p-<?php echo $this->get_field_id('nav_menu'); ?>" <?php if ($source !== 'Custom Menu') echo ' style="display:none"' ?>>
+		<p class="p-<?php echo $this->get_field_id('nav_menu'); ?>" <?php if ($source !== 'Custom Menu') {
+      echo ' style="display:none"' ?>
+  }>
 		<?php
 		// If no menus exists, direct the user to go and create some.
 		if (!$menus) {
@@ -208,12 +214,13 @@ class VMenuWidget extends WP_Widget {
 
 class LoginWidget extends WP_Widget {
 
-	function LoginWidget() {
+	function LoginWidget(): void {
 		$widget_ops = array('classname' => 'login', 'description' => __('Login form', THEME_NS));
 		$this->WP_Widget(false, __('Login', THEME_NS), $widget_ops);
 	}
 
-	function widget($args, $instance) {
+	#[\Override]
+ function widget($args, $instance): void {
 		global $user_ID, $user_identity, $user_level, $user_email, $user_login;
 		extract($args);
 		echo $before_widget;
@@ -228,7 +235,7 @@ class LoginWidget extends WP_Widget {
 				<li><a href="<?php echo esc_url( site_url() ) ?>/wp-admin/post-new.php"><?php _e('Publish', THEME_NS); ?></a></li>
 				<li><a href="<?php echo esc_url( site_url() ) ?>/wp-admin/edit-comments.php"><?php _e('Comments', THEME_NS); ?></a></li>
 			<?php endif; ?>
-			<li><a href="<?php echo wp_logout_url() ?>&amp;redirect_to=<?php echo urlencode(theme_get_current_url()); ?>"><?php _e("Log out", THEME_NS); ?></a></li>
+			<li><a href="<?php echo wp_logout_url() ?>&amp;redirect_to=<?php echo urlencode((string) theme_get_current_url()); ?>"><?php _e("Log out", THEME_NS); ?></a></li>
 			</ul>
 		<?php
 		else:
@@ -240,7 +247,7 @@ class LoginWidget extends WP_Widget {
 					<p id="form-login-username">
 						<label for="log"><?php _e('Username', THEME_NS) ?></label>
 						<br>
-						<input type="text" name="log" id="log" value="<?php echo esc_attr(stripslashes($user_login), 1) ?>" size="20" />
+						<input type="text" name="log" id="log" value="<?php echo esc_attr(stripslashes((string) $user_login)) ?>" size="20" />
 					</p>
 					<p id="form-login-password">
 						<label for="pwd"><?php _e("Password", THEME_NS); ?></label>
@@ -267,7 +274,7 @@ class LoginWidget extends WP_Widget {
 }
 
 // init widgets
-function artWidgetsInit() {
+function artWidgetsInit(): void {
 	register_widget('VMenuWidget');
 	register_widget('LoginWidget');
 }

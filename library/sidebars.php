@@ -2,7 +2,7 @@
 global $theme_sidebars;
 $theme_sidebars = array();
 
-function theme_add_sidebar($group, $id, $name, $description) {
+function theme_add_sidebar($group, $id, $name, $description): void {
     global $theme_sidebars;
     $theme_sidebars[$id] = array('group' => $group, 'id' => $id, 'name' => $name, 'description' => $description);
 }
@@ -39,11 +39,11 @@ foreach ($theme_sidebars as $sidebar) {
     register_sidebar(array_merge($sidebar, $theme_widget_args));
 }
 
-function theme_is_displayed_widget($widget) {
+function theme_is_displayed_widget(array $widget): bool {
     $id = $widget['name'];
     $show_on = theme_get_widget_meta_option($id, 'theme_widget_show_on');
 
-    $page_ids = explode(',', theme_get_widget_meta_option($id, 'theme_widget_page_ids_list'));
+    $page_ids = explode(',', (string) theme_get_widget_meta_option($id, 'theme_widget_page_ids_list'));
     $page_ids = array_map('trim', $page_ids);
     $page_ids = array_filter($page_ids, 'is_numeric');
     $page_ids = array_map('intval', $page_ids);
@@ -52,7 +52,7 @@ function theme_is_displayed_widget($widget) {
                 (theme_get_widget_meta_option($id, 'theme_widget_single_post') && is_single()) ||
                 (theme_get_widget_meta_option($id, 'theme_widget_single_page') && is_page()) ||
                 (theme_get_widget_meta_option($id, 'theme_widget_posts_page') && is_home()) ||
-                (theme_get_widget_meta_option($id, 'theme_widget_page_ids') && !empty($page_ids) && is_page($page_ids));
+                (theme_get_widget_meta_option($id, 'theme_widget_page_ids') && $page_ids !== [] && is_page($page_ids));
         if ((!$selected && 'selected' == $show_on) ||
                 ($selected && 'none_selected' == $show_on)) {
             return false;
@@ -61,22 +61,25 @@ function theme_is_displayed_widget($widget) {
     return true;
 }
 
-function theme_get_dynamic_sidebar_data($sidebar_id) {
+function theme_get_dynamic_sidebar_data($sidebar_id): false|array {
     global $theme_widget_args, $theme_sidebars;
     $sidebar_style = theme_get_option('theme_sidebars_style_' . $theme_sidebars[$sidebar_id]['group']);
     theme_ob_start();
     $success = dynamic_sidebar($sidebar_id);
     $content = theme_ob_get_clean();
-    if (!$success)
+    if (!$success) {
         return false;
+    }
     extract($theme_widget_args);
-    $data = explode($after_widget, $content);
+    $data = explode($after_widget, (string) $content);
     $widgets = array();
     $heading = theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_widget_title_tag');
-    for ($i = 0; $i < count($data); $i++) {
+    $counter = count($data);
+    for ($i = 0; $i < $counter; $i++) {
         $widget = $data[$i];
-        if (theme_is_empty_html($widget))
+        if (theme_is_empty_html($widget)) {
             continue;
+        }
         $id = null;
         $name = null;
         $class = null;
@@ -96,9 +99,9 @@ function theme_get_dynamic_sidebar_data($sidebar_id) {
                 $style = theme_get_widget_style($name, $style);
             }
             $widget = preg_replace('/<widget[^>]+>/', '', $widget);
-            if (preg_match('/<title>(.*)<\/title>/', $widget, $matches)) {
+            if (preg_match('/<title>(.*)<\/title>/', (string) $widget, $matches)) {
                 $title = $matches[1];
-                $widget = preg_replace('/<title>.*?<\/title>/', '', $widget);
+                $widget = preg_replace('/<title>.*?<\/title>/', '', (string) $widget);
             }
         }
         $widgets[] = array(
@@ -114,9 +117,10 @@ function theme_get_dynamic_sidebar_data($sidebar_id) {
     return array_filter($widgets, 'theme_is_displayed_widget');
 }
 
-function theme_print_widget($widget) {
-    if (!is_array($widget))
+function theme_print_widget($widget): bool {
+    if (!is_array($widget)) {
         return false;
+    }
     $widget_name = theme_get_array_value($widget, 'name', '');
     if ($widget_name) {
         echo theme_get_widget_meta_option($widget_name, 'theme_widget_styling');
@@ -126,10 +130,11 @@ function theme_print_widget($widget) {
     }
     return true;
 }
-function theme_print_sidebar($sidebar_id, $before = '', $after = '') {
+function theme_print_sidebar($sidebar_id, $before = '', $after = ''): bool {
     $widgets = theme_get_dynamic_sidebar_data($sidebar_id);
-    if (!is_array($widgets) || count($widgets) < 1)
+    if (!is_array($widgets) || count($widgets) < 1) {
         return false;
+    }
     echo $before;
     foreach ($widgets as $widget) {
         theme_print_widget($widget);

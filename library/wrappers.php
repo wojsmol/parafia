@@ -1,7 +1,7 @@
 <?php
 
 // $style = 'post' or 'block' or 'vmenu' or 'simple'
-function theme_wrapper($style, $args) {
+function theme_wrapper($style, $args): void {
 	$func_name = "theme_{$style}_wrapper";
 	if (function_exists($func_name)) {
 		call_user_func($func_name, $args);
@@ -10,7 +10,7 @@ function theme_wrapper($style, $args) {
 	}
 }
 
-function theme_post_wrapper($args = '') {
+function theme_post_wrapper($args = ''): void {
 	$args = wp_parse_args($args, array(
 			'id'        => '',
 			'class'     => '',
@@ -24,8 +24,9 @@ function theme_post_wrapper($args = '') {
 		)
 	);
 	extract($args);
-	if (theme_is_empty_html($title) && theme_is_empty_html($content))
-		return;
+	if (theme_is_empty_html($title) && theme_is_empty_html($content)) {
+     return;
+ }
 	if ($id !== '') {
 		$id = ' id="' . $id . '" ';
 	}
@@ -47,7 +48,7 @@ if (!theme_is_empty_html($title)) {
 	<?php
 }
 
-function theme_simple_wrapper($args = '') {
+function theme_simple_wrapper($args = ''): void {
 	$args = wp_parse_args($args, array(
 			'id'      => '',
 			'class'   => '',
@@ -57,8 +58,9 @@ function theme_simple_wrapper($args = '') {
 		)
 	);
 	extract($args);
-	if (theme_is_empty_html($title) && theme_is_empty_html($content))
-		return;
+	if (theme_is_empty_html($title) && theme_is_empty_html($content)) {
+     return;
+ }
 	if ($id !== '') {
 		$id = ' id="' . $id . '" ';
 	}
@@ -66,13 +68,14 @@ function theme_simple_wrapper($args = '') {
 		$class = ' ' . $class;
 	}
 	echo "<div class=\"kuj-widget{$class}\"{$id}>";
-	if (!theme_is_empty_html($title))
-		echo '<' . $heading . ' class="kuj-widget-title">' . $title . '</' . $heading . '>';
+	if (!theme_is_empty_html($title)) {
+     echo '<' . $heading . ' class="kuj-widget-title">' . $title . '</' . $heading . '>';
+ }
 	echo '<div class="kuj-widget-content">' . $content . '</div>';
 	echo '</div>';
 }
 
-function theme_block_wrapper($args) {
+function theme_block_wrapper($args): void {
 	$args = wp_parse_args($args, array(
 			'id'      => '',
 			'class'   => '',
@@ -82,8 +85,9 @@ function theme_block_wrapper($args) {
 		)
 	);
 	extract($args);
-	if (theme_is_empty_html($title) && theme_is_empty_html($content))
-		return;
+	if (theme_is_empty_html($title) && theme_is_empty_html($content)) {
+     return;
+ }
 	if ($id !== '') {
 		$id = ' id="' . $id . '" ';
 	}
@@ -124,7 +128,7 @@ EOL;
 }
 
 
-function theme_vmenu_wrapper($args) {
+function theme_vmenu_wrapper($args): void {
 	$args = wp_parse_args($args, array(
 			'id'      => '',
 			'class'   => '',
@@ -134,8 +138,9 @@ function theme_vmenu_wrapper($args) {
 		)
 	);
 	extract($args);
-	if (theme_is_empty_html($title) && theme_is_empty_html($content))
-		return;
+	if (theme_is_empty_html($title) && theme_is_empty_html($content)) {
+     return;
+ }
 	if ($id !== '') {
 		$id = ' id="' . $id . '" ';
 	}

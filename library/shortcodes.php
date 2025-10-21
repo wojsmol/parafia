@@ -13,12 +13,12 @@
  * More detailed information about shortcodes: http://codex.wordpress.org/Shortcode_API
  * 
  */
-function theme_subscribe_rss() {
+function theme_subscribe_rss(): string {
 	return '<a class="button rss-subscribe" href="' . get_bloginfo('rss2_url') . '" title="' . __('RSS Feeds', THEME_NS) . '">' . __('RSS Feeds', THEME_NS) . '</a>';
 }
 
 // ads
-function theme_advertisement($atts) {
+function theme_advertisement($atts): string {
 	extract(shortcode_atts(array(
 				'code' => 1,
 				'align' => 'left',
@@ -27,50 +27,51 @@ function theme_advertisement($atts) {
 	$ad = theme_get_option('theme_ad_code_' . $code);
 	if (!empty($ad)):
 		$ad = '<div class="ad align' . esc_attr($align) . '">' . $ad . '</div>';
-		if (!$inline)
-			$ad .= '<div class="cleared"></div>';
+		if (!$inline) {
+      $ad .= '<div class="cleared"></div>';
+  }
 		return $ad;
-	else:
-		return '<p class="error"><strong>[ad]</strong> ' . sprintf(__("Empty ad slot (#%s)!", THEME_NS), esc_attr($code)) . '</p>';
 	endif;
+ return '<p class="error"><strong>[ad]</strong> ' . sprintf(__("Empty ad slot (#%s)!", THEME_NS), esc_attr($code)) . '</p>';
 }
 
-function theme_go_to_top() {
-	return sprintf('<a class="button" href="#">' . __('Top', THEME_NS) . '</a>');
+function theme_go_to_top(): string {
+	return '<a class="button" href="#">' . __('Top', THEME_NS) . '</a>';
 }
 
 // login
-function theme_login_link() {
-	if (is_user_logged_in())
-		return sprintf('<a class="login-link" href="%1$s">%2$s</a>', admin_url(), __('Site Admin', THEME_NS));
-	else
-		return sprintf('<a class="login-link" href="%1$s">%2$s</a>', wp_login_url(), __('Log in', THEME_NS));
+function theme_login_link(): string {
+	if (is_user_logged_in()) {
+     return sprintf('<a class="login-link" href="%1$s">%2$s</a>', admin_url(), __('Site Admin', THEME_NS));
+ } else {
+     return sprintf('<a class="login-link" href="%1$s">%2$s</a>', wp_login_url(), __('Log in', THEME_NS));
+ }
 }
 
 // blog title
-function theme_blog_title() {
+function theme_blog_title(): string {
 	return '<span class="blog-title">' . get_bloginfo('name') . '</span>';
 }
 
 // validate xhtml
-function theme_validate_xhtml() {
+function theme_validate_xhtml(): string {
 	return '<a class="button valid-xhtml" href="http://validator.w3.org/check?uri=referer" title="Valid XHTML">XHTML 1.1</a>';
 }
 
 // validate css
-function theme_validate_css() {
+function theme_validate_css(): string {
 	return '<a class="button valid-css" href="http://jigsaw.w3.org/css-validator/check/referer?profile=css3" title="Valid CSS">CSS 3.0</a>';
 }
 
 // current year
-function theme_current_year() {
+function theme_current_year(): string {
 	return date('Y');
 }
 
 function theme_rss_url() {
 	return get_bloginfo('rss2_url', 'raw');
 }
-function theme_rss_title() {
+function theme_rss_title(): string {
 	return sprintf(__('%s RSS Feed', THEME_NS), get_bloginfo('name'));
 }
 
@@ -83,16 +84,15 @@ function theme_post_link($atts) {
 	), $atts));
 	$raw_name = $name;
 	$type = 'page';
-	if(strpos($name, '/Blog%20Posts/') === 0) {
-		$name = substr($name, strlen('/Blog%20Posts/'));
+	if(str_starts_with((string) $name, '/Blog%20Posts/')) {
+		$name = substr((string) $name, strlen('/Blog%20Posts/'));
 		$type = 'post';
 	}
 	$target = get_page_by_path($name, OBJECT, $type);
 	if(null !== $target) {
 		return get_permalink($target->ID);
-	} else {
-		return $raw_name;
 	}
+ return $raw_name;
 }
 function theme_search() {
 	theme_ob_start();
@@ -109,11 +109,11 @@ function theme_collage($atts) {
 	return $collages[$id];
 }
 
-function myseparator(){
+function myseparator(): string{
   return '<div class="separator"><div class="shadow"></div></div> &nbsp';
 }
 
-function mymap(){
+function mymap(): string{
   return '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d770810.9144313803!2d17.199130840406568!3d50.609979437129965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4711a44cce86eff5%3A0xc9bb27cc2b7d2db2!2sPrudnicka+62%2C+47-370+Zielina!5e0!3m2!1spl!2spl!4v1444684955984" width="710" height="330" frameborder="0" style="border:0" allowfullscreen></iframe>';
 }
 

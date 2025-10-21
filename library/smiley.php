@@ -54,7 +54,7 @@ function theme_get_smilies_js() {
 	return theme_ob_get_clean();
 }
 
-function theme_get_smilies() {
+function theme_get_smilies(): string {
 	$smilies = array(
 		':?:' => 'icon_question.gif',
 		':razz:' => 'icon_razz.gif',

@@ -1,6 +1,6 @@
 <?php
 
-function theme_print_options() {
+function theme_print_options(): void {
 	global $theme_options;
 	?>
 	<div class="wrap">
@@ -10,11 +10,11 @@ function theme_print_options() {
 		if (isset($_REQUEST['Submit'])) {
 			foreach ($theme_options as $value) {
 				$id = theme_get_array_value($value, 'id');
-				$val = stripslashes(theme_get_array_value($_REQUEST, $id, ''));
+				$val = stripslashes((string) theme_get_array_value($_REQUEST, $id, ''));
 				$type = theme_get_array_value($value, 'type');
 				switch ($type) {
 					case 'checkbox':
-						$val = ($val ? 1 : 0);
+						$val = ($val !== '' && $val !== '0' ? 1 : 0);
 						break;
 					case 'numeric':
 						$val = (int) $val;
@@ -76,7 +76,8 @@ function theme_print_options() {
 			echo '</table>' . "\n";
 		}
 		echo "<script>\r\n";
-		for($i = 0; $i < count($dependent_fields); $i++) {
+  $counter = count($dependent_fields);
+		for($i = 0; $i < $counter; $i++) {
 			echo "makeDependentField('{$dependent_fields[$i][0]}', '{$dependent_fields[$i][1]}');" . PHP_EOL;
 		}
 		echo "jQuery('#theme_options_form').bind('submit', function() {" . PHP_EOL .
@@ -96,7 +97,7 @@ function theme_print_options() {
 	<?php
 }
 
-function theme_print_option_control($op, $val) {
+function theme_print_option_control(array $op, $val): void {
 	$id = theme_get_array_value($op, 'id');
 	$type = theme_get_array_value($op, 'type');
 	$options = theme_get_array_value($op, 'options');
@@ -126,17 +127,13 @@ function theme_print_option_control($op, $val) {
 			echo '<input type="checkbox" name="' . $id . '" id="' . $id . '" value="1" ' . $checked . '/>' . "\n";
 			break;
 		default:
-			if ($type == 'text') {
-				$class = 'regular-text';
-			} else {
-				$class = 'large-text';
-			}
+			$class = $type == 'text' ? 'regular-text' : 'large-text';
 			echo '<input	name="' . $id . '" id="' . $id . '" type="text" value="' . esc_attr($val) . '" class="' . $class . '" />' . "\n";
 			break;
 	}
 }
 
-function theme_add_meta_boxes() {
+function theme_add_meta_boxes(): void {
 	add_meta_box( 'theme_meta_box',
 		__('Theme Options', THEME_NS),
 		'theme_print_page_meta_box',
@@ -169,33 +166,35 @@ function theme_add_meta_boxes() {
 
 /* Prints meta box content */
 
-function theme_print_page_meta_box($post) {
+function theme_print_page_meta_box($post): void {
 	global $theme_page_meta_options;
 	theme_print_meta_box($post->ID, $theme_page_meta_options);
 }
 
-function theme_print_post_meta_box($post) {
+function theme_print_post_meta_box($post): void {
 	global $theme_post_meta_options;
 	theme_print_meta_box($post->ID, $theme_post_meta_options);
 }
 
-function theme_print_meta_box($post_id, $meta_options) {
+function theme_print_meta_box($post_id, $meta_options): void {
 	// Use nonce for verification
 	wp_nonce_field('theme_meta_options', 'theme_meta_noncename');
-	if (!isset($post_id))
-		return;
+	if (!isset($post_id)) {
+     return;
+ }
 	foreach ($meta_options as $option) {
 		$id = theme_get_array_value($option, 'id');
 		$name = theme_get_array_value($option, 'name');
 		$desc = theme_get_array_value($option, 'desc');
-		if(strpos($post_id, '-') === false) {
+		if(!str_contains((string) $post_id, '-')) {
 			$value = theme_get_meta_option($post_id, $id);
 		} else {
 			$value = theme_get_widget_meta_option($post_id, $id);
 		}
 		$necessary = theme_get_array_value($option, 'necessary');
-		if ($necessary && !current_user_can($necessary))
-			continue;
+		if ($necessary && !current_user_can($necessary)) {
+      continue;
+  }
 		echo '<p class="meta-options' . ($name ? ' named' : '') . '"><label class="selectit" for="' . $id . '"><strong>' . $name . '</strong></label><br />';
 		theme_print_option_control($option, $value);
 		if ($desc) {
@@ -207,7 +206,7 @@ function theme_print_meta_box($post_id, $meta_options) {
 
 add_action('wp_default_scripts', 'theme_custom_header_L10n');
 add_action('admin_head', 'theme_header_image_script_control');
-function theme_custom_header_L10n(&$scripts) {
+function theme_custom_header_L10n(&$scripts): void {
 	global $pagenow;
 	if (('media-upload.php' == $pagenow || 'async-upload.php' == $pagenow) && isset($_GET['type']) && 'image_header' === $_GET['type']) {
 		$scripts->localize( 'common', 'themeL10n', array(
@@ -216,11 +215,11 @@ function theme_custom_header_L10n(&$scripts) {
 	}
 }
 
-function theme_custom_header_form_url($form_action_url, $type) {
+function theme_custom_header_form_url($form_action_url, string $type): array|string {
 	return str_replace('type=' . $type . '&', 'type=image_header&', $form_action_url);
 }
 
-function theme_header_image_script_control() {
+function theme_header_image_script_control(): void {
 	global $pagenow;
 	if (('media-upload.php' != $pagenow && 'async-upload.php' != $pagenow) || 'image_header' !== $_GET['type']) {
 		return;
@@ -266,7 +265,7 @@ function theme_header_image_script_control() {
 	<?php
 }
 
-function theme_print_page_header_image_meta_box($post) {
+function theme_print_page_header_image_meta_box($post): void {
 	$theme_header_image = theme_get_meta_option($post->ID, 'theme_header_image');
 	$theme_header_image_with_flash = theme_get_meta_option($post->ID, 'theme_header_image_with_flash') ? 'checked="checked" ' : '';
 	?>
@@ -333,8 +332,9 @@ function theme_save_post($post_id) {
 
 	// verify if this is an auto save routine. If it is our form has not been submitted, so we dont want
 	// to do anything
-	if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-		return $post_id;
+	if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+     return $post_id;
+ }
 
 	$meta_options = null; //posts
 	if ('page' == $_POST['post_type']) {
@@ -351,19 +351,21 @@ function theme_save_post($post_id) {
 
 	$meta_options = array_merge($meta_options, $theme_page_header_image_meta_options);
 
-	if (!$meta_options)
-		return $post_id;
+	if ($meta_options === []) {
+     return $post_id;
+ }
 	// OK, we're authenticated: we need to find and save the data
 	foreach ($meta_options as $value) {
 		$id = theme_get_array_value($value, 'id');
-		$val = stripslashes(theme_get_array_value($_POST, $id, ''));
+		$val = stripslashes((string) theme_get_array_value($_POST, $id, ''));
 		$type = theme_get_array_value($value, 'type');
 		$necessary = theme_get_array_value($value, 'necessary');
-		if ($necessary && !current_user_can($necessary))
-			continue;
+		if ($necessary && !current_user_can($necessary)) {
+      continue;
+  }
 		switch ($type) {
 			case 'checkbox':
-				$val = ($val ? 1 : 0);
+				$val = ($val !== '' && $val !== '0' ? 1 : 0);
 				break;
 			case 'numeric':
 				$val = (int) $val;
@@ -376,7 +378,7 @@ function theme_save_post($post_id) {
 }
 
 add_action('admin_head-widgets.php', 'admin_head_widgets_style');
-function admin_head_widgets_style() {
+function admin_head_widgets_style(): void {
 	echo <<<EOL
 <style>
 .widget .widget-inside p.meta-options {
@@ -394,7 +396,7 @@ EOL;
 }
 
 add_action('admin_print_scripts-appearance_page_functions', 'theme_dependent_field_scripts');
-function theme_dependent_field_scripts() {
+function theme_dependent_field_scripts(): void {
 	?>
 <script>
 function makeDependentField(master, slave) {
@@ -416,7 +418,7 @@ function makeDependentField(master, slave) {
 }
 
 add_action('admin_head-widgets.php', 'theme_dependent_widget_field_scripts');
-function theme_dependent_widget_field_scripts() {
+function theme_dependent_widget_field_scripts(): void {
 	global $theme_widget_meta_options;
 	?>
 <script>

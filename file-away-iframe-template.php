@@ -6,7 +6,9 @@
 <html>
 <head>
 <link rel="stylesheet" href="<?php bloginfo('stylesheet_url'); ?>" type="text/css" media="screen" />
-<?php if(is_page_template('file-away-iframe-template.php')) show_admin_bar(false); ?><?php wp_head(); ?>
+<?php if (is_page_template('file-away-iframe-template.php')) {
+    show_admin_bar(false);
+} ?><?php wp_head(); ?>
 <style>body {display:none;}</style>
 <script>
 jQuery(document).ready(function($){
