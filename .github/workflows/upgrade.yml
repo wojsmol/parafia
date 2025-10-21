@@ -1,73 +1,89 @@
-name: PHP 8.4 Upgrade Check & Fix
+name: PHP 8.4 Upgrade and Auto-Fix
 
-# Allows manual trigger from GitHub Actions UI
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
-      - 'feature/**'
+    branches: [ "main", "master" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main", "master" ]
+
+# Nadajemy uprawnienia do zapisu, aby Rector mógł automatycznie commitować zmiany.
+permissions:
+  contents: write
 
 jobs:
-  php-compatibility:
+  # Zadanie 1: Analiza statyczna (PHPStan)
+  static-analysis:
+    name: PHPStan (8.4)
     runs-on: ubuntu-latest
+    
+    # Warunek: Pomiń, jeśli to automatyczny commit z Rectora
+    if: github.event_name == 'pull_request' || github.event.commits[0].committer.username != 'github-actions[bot]'
+
     steps:
-      # Checkout the repository
-      - name: Checkout code
+      - name: Checkout kod
         uses: actions/checkout@v4
 
-      # Setup PHP 8.4
-      - name: Setup PHP
+      - name: Instalacja PHP i rozszerzeń
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
-          extensions: mbstring, xml, curl, json, intl
+          # Celujemy w najwyższą wersję PHP 8.4
+          php-version: 8.4
+          # Wymagane rozszerzenia do poprawnego działania Composera (naprawia błąd iconv/mbstring)
+          extensions: mbstring, iconv 
+          coverage: none
 
-      # Install composer dependencies
-      - name: Install dependencies
-        run: |
-          composer install
+      - name: Buforowanie zależności Composera
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
-      - name: Register PHPCompatibility standard
-        run: |
-         vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
-         echo "Checking installed standards:"
-         vendor/bin/phpcs -i
+      - name: Instalacja zależności Composera
+        run: composer install --prefer-dist --no-progress --no-suggest
 
-      # Run PHPCompatibility sniff
-      - name: Check PHP compatibility
-        run: |
-          vendor/bin/phpcs -p ./ --standard=PHPCompatibility --runtime-set testVersion 8.4
+      - name: Uruchomienie PHPStan
+        run: ./vendor/bin/phpstan analyse --configuration phpstan.neon.dist
 
-      # Run Rector to automatically fix PHP 8.x+ issues
-      - name: Apply Rector fixes
-        run: |
-          echo "<?php
-          declare(strict_types=1);
-          use Rector\Core\Configuration\Option;
-          use Rector\Set\ValueObject\SetList;
-          use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+  # Zadanie 2: Automatyczne poprawki Rectorem i commitowanie
+  rector_fix_and_commit:
+    name: Auto-Refactoring (Rector)
+    runs-on: ubuntu-latest
+    needs: [static-analysis]
+    
+    # To zadanie uruchamiamy tylko na push do głównej gałęzi (nie na PR i nie po Rectora commit)
+    if: github.event_name == 'push' && github.event.commits[0].committer.username != 'github-actions[bot]'
 
-          return static function (ContainerConfigurator \$containerConfigurator): void {
-              \$parameters = \$containerConfigurator->parameters();
-              \$parameters->set(Option::PATHS, [__DIR__]);
-              \$containerConfigurator->import(SetList::PHP_80);
-              \$containerConfigurator->import(SetList::PHP_81);
-              \$containerConfigurator->import(SetList::PHP_82);
-              \$containerConfigurator->import(SetList::PHP_83);
-              \$containerConfigurator->import(SetList::PHP_84);
-          };" > rector.php
+    steps:
+      - name: Checkout kod
+        uses: actions/checkout@v4
 
-          vendor/bin/rector process
+      - name: Instalacja PHP i rozszerzeń
+        uses: shivammathur/setup-php@v2
+        with:
+          # Celujemy w najwyższą wersję PHP 8.4
+          php-version: 8.4
+          # Wymagane rozszerzenia do poprawnego działania Composera (naprawia błąd iconv/mbstring)
+          extensions: mbstring, iconv 
+          coverage: none
 
-      # Optional: Commit Rector fixes automatically
-      - name: Commit Rector changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Apply PHP 8.4 automated fixes via Rector" || echo "No changes to commit"
-          git push
+      - name: Buforowanie zależności Composera
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Instalacja zależności Composera
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Uruchomienie Rectora i refaktoryzacja kodu
+        run: ./vendor/bin/rector process
+
+      - name: Automatyczne commitowanie poprawek Rectora
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Fix: Automated PHP 8.4 compatibility updates via Rector."
+          branch: ${{ github.head_ref || github.ref_name }}
+          # Wymuszenie nowego commita, nawet jeśli Rector nic nie zmienił
+          push_options: '--force' 

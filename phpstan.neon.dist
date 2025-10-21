@@ -1,0 +1,20 @@
+parameters:
+    # Wskazuje katalogi do analizy.
+    # Wyszukuje pliki .php w bieżącym katalogu i podkatalogach.
+    paths:
+        - .
+
+    # Wyklucza katalogi z analizy
+    excludePaths:
+        - vendor
+
+    # Ustawia najwyższy poziom rygoru analizy statycznej
+    level: 5
+
+    # Docelowa wersja PHP do analizy (PHP 8.4)
+    phpVersion: 80400
+
+    # Definicje stubów WordPress, aby PHPStan rozpoznał funkcje globalne (np. get_header)
+    # Ścieżka wskazuje na pliki definicji pobrane przez php-stubs/wordpress-stubs
+    stubFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
