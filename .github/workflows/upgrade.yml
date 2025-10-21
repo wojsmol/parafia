@@ -29,9 +29,7 @@ jobs:
       # Install composer dependencies
       - name: Install dependencies
         run: |
-          composer require --dev "squizlabs/php_codesniffer"
-          composer require --dev "phpcompatibility/php-compatibility"
-          composer require --dev rector/rector
+          composer install
 
       # Run PHPCompatibility sniff
       - name: Check PHP compatibility
