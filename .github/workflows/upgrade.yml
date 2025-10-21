@@ -31,6 +31,12 @@ jobs:
         run: |
           composer install
 
+      - name: Register PHPCompatibility standard
+        run: |
+         vendor/bin/phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
+         echo "Checking installed standards:"
+         vendor/bin/phpcs -i
+
       # Run PHPCompatibility sniff
       - name: Check PHP compatibility
         run: |
