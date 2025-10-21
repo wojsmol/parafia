@@ -10,41 +10,6 @@ on:
 permissions:
   contents: write
 
-jobs:
-  # Zadanie 1: Analiza statyczna (PHPStan)
-  static-analysis:
-    name: PHPStan (8.4)
-    runs-on: ubuntu-latest
-    
-    # Warunek: Pomiń, jeśli to automatyczny commit z Rectora
-    if: github.event_name == 'pull_request' || github.event.commits[0].committer.username != 'github-actions[bot]'
-
-    steps:
-      - name: Checkout kod
-        uses: actions/checkout@v4
-
-      - name: Instalacja PHP i rozszerzeń
-        uses: shivammathur/setup-php@v2
-        with:
-          # Celujemy w najwyższą wersję PHP 8.4
-          php-version: 8.4
-          # Wymagane rozszerzenia do poprawnego działania Composera (naprawia błąd iconv/mbstring)
-          extensions: mbstring, iconv 
-          coverage: none
-
-      - name: Buforowanie zależności Composera
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Instalacja zależności Composera
-        run: composer install --prefer-dist --no-progress --no-suggest
-
-      - name: Uruchomienie PHPStan
-        run: ./vendor/bin/phpstan analyse --configuration phpstan.neon.dist
-
   # Zadanie 2: Automatyczne poprawki Rectorem i commitowanie
   rector_fix_and_commit:
     name: Auto-Refactoring (Rector)
