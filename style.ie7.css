@@ -1,0 +1,115 @@
+/* Created by Artisteer v4.3.0.60745 */
+
+.kuj-header, #kuj-header-bg, .kuj-layout-cell, .kuj-layout-wrapper, .kuj-footer, .kuj-nav, #kuj-hmenu-bg, .kuj-sheet,
+.clearfix {
+   zoom: expression(this.runtimeStyle.zoom="1", this.appendChild(document.createElement("br")).className="cleared");
+}
+
+.kuj-textblock > div {
+   display: block;
+   line-height: normal;
+   zoom: 1;
+}
+
+.kuj-header
+{
+   z-index: 1;
+   background-image: [headerimage];
+   background-position: [headerposition];
+}
+
+#kuj-header-bg 
+{
+   display: none;
+}
+
+.kuj-content-layout, .kuj-content-layout-row, .kuj-layout-cell 
+{
+   display: block;
+   zoom: 1;
+}
+.kuj-layout-cell
+{
+   position:relative;
+   float: left;
+   clear: right;
+}
+
+ul.kuj-vmenu, ul.kuj-vmenu ul, ul.kuj-vmenu li{
+   zoom: 1;
+}
+
+ul.kuj-vmenu ul 
+{
+}
+
+input[type="text"]
+{
+   margin:0 0 0 -3px;
+   zoom:expression(runtimeStyle.zoom = 1, parentNode.insertBefore(document.createElement('div'), this).appendChild(this));
+}
+
+* html input[type="text"]
+{
+   margin :0;
+}
+
+form.kuj-search>input[type="text"]
+{
+   margin:0 0 0 -3px;
+   zoom:expression(runtimeStyle.zoom = 1, parentNode.insertBefore(document.createElement('div'), this).appendChild(this));
+}
+
+form.kuj-search div>input[type="text"]
+{
+   width: 100%;
+}
+
+* html form.kuj-search>input[type="text"] 
+{
+   margin :0;
+}
+
+form.kuj-search
+{
+   zoom: 1;
+}
+.kuj-postcontent {
+   height: 1%;
+}
+
+.close-alt, .arrow-right-alt, .arrow-left-alt {
+   display: block !important;
+}
+.cw, .ccw {
+   display: none !important;
+}
+
+.kuj-sidebar1
+{
+   background: none !important;
+   border: none !important;
+   zoom:expression(runtimeStyle.zoom=1, parentNode.parentNode.insertBefore(document.createElement('div'),parentNode.parentNode.firstChild).className='kuj-sidebar1-bg' + (className.indexOf('kuj-sidebar1-fix') == -1 ? '' : ' kuj-sidebar1-bg-fix' ));
+}
+
+.kuj-sidebar1-bg 
+{
+   border-right:2px solid #87B55A;
+   position:absolute;
+   z-index:-2;
+   direction: ltr;
+   left:  0;
+   bottom:0;
+   top:0;
+   width: 182px;
+   overflow:hidden;
+   display:block;
+   background-color: #7FD72D;
+}
+
+.kuj-content 
+{
+   width: auto;
+   float:none;
+}
+
