@@ -1,6 +1,7 @@
 name: PHP 8.4 Upgrade and Auto-Fix
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "master" ]
   pull_request:
