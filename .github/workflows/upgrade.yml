@@ -18,7 +18,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Ustawienie PHP 8.4 dla wszystkich narzędzi
+    # Ustawienie PHP 8.4
     - name: Set up PHP 8.4
       uses: shivammathur/setup-php@v2
       with:
@@ -26,17 +26,18 @@ jobs:
         extensions: json, curl, mbstring, dom, xml
         tools: composer, phpcs
 
-    # 1. Instalacja podstawowych zależności
+    # 1. Instalacja podstawowych zależności (z composer.lock)
     - name: Install base dependencies
       run: composer install --no-interaction --prefer-dist
 
-    # 2. Instalacja rozszerzeń specyficznych dla WordPressa
+    # 2. Instalacja rozszerzeń WordPress (fsylum)
     - name: Install Rector WordPress Extensions (using fsylum)
       run: composer require --dev fsylum/rector-wordpress szepeviktor/phpstan-wordpress --no-scripts
       
-    # 3. KRYTYCZNY KROK: Ostateczna aktualizacja i wymuszenie świeżego autoloadera dla Rectora
-    - name: Final Rector Update and Autoloader Rebuild
-      run: composer update rector/rector --with-all-dependencies --ignore-platform-reqs
+    # 3. KRYTYCZNY KROK: Ostateczna aktualizacja wszystkich zależności
+    # Ten krok wymusza całkowitą odbudowę autoloaderów i rozwiązuje problem z ładowaniem klas zewnętrznych.
+    - name: Final Composer Update (Autoloader Rebuild)
+      run: composer update --no-interaction --prefer-dist --ignore-platform-reqs
 
     # 4. Uruchomienie procesu modernizacji (za pomocą jawnego binarium PHP)
     - name: Run Rector
