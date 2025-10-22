@@ -8,44 +8,57 @@ on:
 
 jobs:
   modernize:
-    # KLUCZOWY KROK: Nadanie uprawnień do zapisu (write) dla bota akcji, co naprawia błąd 403.
     permissions:
       contents: write
-      
+
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      # 1️⃣ Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # Ustawienie PHP 8.4
-    - name: Set up PHP 8.4
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.4'
-        extensions: json, curl, mbstring, dom, xml
-        tools: composer, phpcs
+      # 2️⃣ Setup PHP 8.4
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: json, curl, mbstring, dom, xml
+          tools: composer, phpcs
 
-    # 1. Instalacja podstawowych zależności (z composer.lock)
-    - name: Install base dependencies
-      run: composer install --no-interaction --prefer-dist
+      # 3️⃣ Install base dependencies
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
 
-    # 2. Instalacja rozszerzeń WordPress (fsylum)
-    - name: Install Rector WordPress Extensions (using fsylum)
-      run: composer require --dev fsylum/rector-wordpress szepeviktor/phpstan-wordpress --no-scripts
-      
-    # 3. KRYTYCZNY KROK: Ostateczna aktualizacja wszystkich zależności
-    # Ten krok wymusza całkowitą odbudowę autoloaderów i rozwiązuje problem z ładowaniem klas zewnętrznych.
-    - name: Final Composer Update (Autoloader Rebuild)
-      run: composer update --no-interaction --prefer-dist --ignore-platform-reqs
+      # 4️⃣ Remove potencjalnie konfliktujące pakiety
+      - name: Remove old Rector dependencies
+        run: |
+          composer remove rector/rector rector/rector-phpunit --dev || true
 
-    # 4. Uruchomienie procesu modernizacji (za pomocą jawnego binarium PHP)
-    - name: Run Rector
-      run: php -d memory_limit=2G vendor/bin/rector process
+      # 5️⃣ Install Rector 2.2 + Rector PHPUnit sets + PHPStan 1.12
+      - name: Install Rector + PHPStan
+        run: |
+          composer require --dev rector/rector:^2.2 rector/rector-phpunit:^1.1 -W
+          composer require --dev phpstan/phpstan:^1.12 -W
 
-    # 5. Automatyczny commit i push zmian wprowadzonych przez Rectora
-    - name: Commit and Push changes
-      uses: stefanzweifel/git-auto-commit-action@v5
-      with:
-        commit_message: 'ci: Automatic code modernization (Rector)'
-        branch: main
+      # 6️⃣ Rebuild Composer autoloader
+      - name: Rebuild autoloader
+        run: composer dump-autoload -o
+
+      # 7️⃣ Run Rector
+      - name: Run Rector
+        run: vendor/bin/rector process --config rector.php --ansi --no-progress-bar
+
+      # 8️⃣ Commit & push changes if Rector wprowadzi zmiany
+      - name: Commit and Push changes
+        id: git-check
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add .
+            git commit -m "ci: Rector automatic PHP/WP modernization"
+            git push
+          else
+            echo "No changes from Rector"
+          fi

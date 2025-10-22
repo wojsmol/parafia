@@ -4,48 +4,50 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
-use Rector\Set\ValueObject\LevelSetList; // Nowy import
+use Rector\PHPUnit\Set\PHPUnitSetList;
 
-// usunięto use Fsylum\Rector\ValueObject\SetList; - omijamy niestabilny autoloader
-
-return static function (RectorConfig $rectorConfig): void {
-    // 1. Ustawienia ścieżek
-    $rectorConfig->paths([
-        __DIR__, // Główny folder projektu
-        __DIR__ . '/library', 
-        __DIR__ . '/rector.php',
+return static function (RectorConfig $config): void {
+    // 🔍 Skany folderów z kodem PHP
+    $config->paths([
+        __DIR__,
+        __DIR__ . '/library',
     ]);
 
-    // 2. Wykluczenie katalogów
-    $rectorConfig->skip([
-        __DIR__ . '/vendor/*',
+    // 🚫 Ignoruj katalogi bez kodu
+    $config->skip([
+        __DIR__ . '/vendor',
+        __DIR__ . '/node_modules',
+        __DIR__ . '/assets',
+        __DIR__ . '/tests',
+        __DIR__ . '/backup',
     ]);
 
-    // Włącz importowanie nazw
-    $rectorConfig->importNames(true);
+    // 📜 Ustawienia PHP od wersji 5.3 do 8.4
+    $config->phpVersion(80400);
 
-    // 3. Ustawienia poziomu PHP (8.4)
-    $rectorConfig->phpVersion(80400); 
-
-    // 4. Importowanie reguł modernizacji ogólnej
-    $rectorConfig->sets([
-        // Najwyższy dostępny poziom modernizacji PHP
-        LevelSetList::UP_TO_PHP_84, 
-
-        // Modernizacja ogólna i usuwanie przestarzałego kodu
+    // ⚙️ Zestawy modernizacji
+    $config->sets([
+        SetList::PHP_53,
+        SetList::PHP_54,
+        SetList::PHP_55,
+        SetList::PHP_56,
+        SetList::PHP_70,
+        SetList::PHP_71,
+        SetList::PHP_72,
+        SetList::PHP_73,
+        SetList::PHP_74,
+        SetList::PHP_80,
+        SetList::PHP_81,
+        SetList::PHP_82,
+        SetList::PHP_83,
+        SetList::PHP_84,
         SetList::CODE_QUALITY,
         SetList::DEAD_CODE,
-        SetList::CODING_STYLE,
-        SetList::EARLY_RETURN,
-        SetList::PRIVATIZATION,
+        SetList::TYPE_DECLARATION,
+        PHPUnitSetList::PHPUNIT_100,
     ]);
-    
-    // 5. JAWNY IMPORT REGUL WORDPRESSA
-    // Używamy jawnej ścieżki do pliku konfiguracyjnego dla zestawu reguł WP 6.8
-    // Ta ścieżka została zweryfikowana jako poprawna.
-    $rectorConfig->import(__DIR__ . '/vendor/fsylum/rector-wordpress/config/sets/level/up-to-wp-6.8.php');
 
-
-    // 6. Konfiguracja cache
-    $rectorConfig->cacheDirectory(__DIR__ . '/var/cache/rector');
+    // ✅ Automatyczne importy i typowanie
+    $config->importNames();
+    $config->importShortClasses(false);
 };
