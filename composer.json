@@ -1,9 +1,8 @@
 {
     "require-dev": {
-        "rector/rector": "*",
-        "phpstan/phpstan": "^1.12",
+        "phpstan/phpstan": "^2.1",
         "phpstan/extension-installer": "^1.4",
-        "szepeviktor/phpstan-wordpress": "^1.3"
+        "rector/rector": "^2.2"
     },
     "config": {
         "allow-plugins": {

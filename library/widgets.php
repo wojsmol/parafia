@@ -137,12 +137,10 @@ class VMenuWidget extends WP_Widget {
 	}
 
 	#[\Override]
-	function update($new_instance, $old_instance) {
-		$instance['title'] = strip_tags((string) $new_instance['title']);
-		$instance['source'] = $new_instance['source'];
-		$instance['nav_menu'] = (int) $new_instance['nav_menu'];
-		return $instance;
-	}
+    function update($new_instance, $old_instance)
+    {
+        return ['title' => strip_tags((string) $new_instance['title']), 'source' => $new_instance['source'], 'nav_menu' => (int) $new_instance['nav_menu']];
+    }
 
 	#[\Override]
 	function form($instance): void {

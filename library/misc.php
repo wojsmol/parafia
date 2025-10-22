@@ -22,7 +22,7 @@ function theme_get_array_value($arr = [], $key = null, $def = false) {
 }
 
 function theme_is_empty_html($str): bool {
-	return (!is_string($str) || theme_strlen(str_replace(['&nbsp;', ' ', "\n", "\r", "\t"], '', $str)) == 0);
+	return (!is_string($str) || theme_strlen(str_replace(['&nbsp;', ' ', "\n", "\r", "\t"], '', $str)) === 0);
 }
 
 
@@ -70,7 +70,7 @@ function theme_is_current_url($url): bool {
 
 function theme_prepare_attr($attr = []): string {
 	$attr = wp_parse_args($attr);
-	if (count($attr) == 0) {
+	if (count($attr) === 0) {
      return '';
  }
 	$result = '';
@@ -103,7 +103,7 @@ function theme_highlight_excerpt($search_query, $text): string {
 	$length = 0;
 	while ($length < 256 && count($workkeys)) {
 		foreach ($workkeys as $k => $key) {
-			if (strlen($key) == 0) {
+			if ($key === '') {
 				unset($workkeys[$k]);
 				continue;
 			}
@@ -152,7 +152,7 @@ function theme_highlight_excerpt($search_query, $text): string {
 	}
 
 	// If we didn't find anything, return the beginning.
-	if (count($ranges) == 0) {
+	if (count($ranges) === 0) {
      return '<p>' . _theme_text_truncate($text, 256) . '&nbsp;...</p>';
  }
 
@@ -269,7 +269,7 @@ function _theme_text_find_delimiter(array $string, $pos = 0, $min = -1, $max = -
 	return $pos;
 }
 
-function _theme_text_truncate($string, $byte) {
+function _theme_text_truncate(array $string, $byte): array|string {
 	$len = strlen((string) $string);
 	if ($len <= $byte) {
      return $string;

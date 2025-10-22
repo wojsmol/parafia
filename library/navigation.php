@@ -165,7 +165,7 @@ function theme_get_list_pages($args = []): string {
 		if ($separator) {
 			$href = '#';
 		}
-		$items[] = new theme_MenuItem(['id' => $id, 'active' => $active, 'attr' => ['class' => ($active ? 'active' : ''), 'href' => $href, 'title' => strip_tags($title)], 'title' => $title, 'parent' => $page->post_parent]);
+		$items[] = new theme_MenuItem(['id' => $id, 'active' => $active, 'attr' => ['class' => ($active ? 'active' : ''), 'href' => $href, 'title' => strip_tags((string) $title)], 'title' => $title, 'parent' => $page->post_parent]);
 	}
 	$walker = new theme_MenuWalker();
 	return $walker->walk($items, $args);
@@ -200,7 +200,7 @@ function theme_get_list_categories($args = []): string {
 		$title = $category->name;
 		$desc = ($category->description ?: sprintf(__('View all posts in %s', THEME_NS), $title));
 		$active = in_array($id, $activeIDs);
-		$items[] = new theme_MenuItem(['id' => $id, 'active' => $active, 'attr' => ['class' => ($active ? 'active' : ''), 'href' => get_category_link($id), 'title' => strip_tags($desc)], 'title' => $title, 'parent' => $category->parent]);
+		$items[] = new theme_MenuItem(['id' => $id, 'active' => $active, 'attr' => ['class' => ($active ? 'active' : ''), 'href' => get_category_link($id), 'title' => strip_tags((string) $desc)], 'title' => $title, 'parent' => $category->parent]);
 	}
 	$walker = new theme_MenuWalker();
 	return $walker->walk($items, $args);
@@ -210,7 +210,7 @@ function theme_get_list_categories($args = []): string {
 /**
  * @return mixed[]
  */
-function theme_get_category_branch($id, array $categories, $IdToKey): array {
+function theme_get_category_branch($id, array $categories, array $IdToKey): array {
 	$result = [];
 	while ($id && isset($IdToKey[$id])) {
 		$result[] = $id;
@@ -241,7 +241,7 @@ class theme_MenuItem {
 
 	function get_start($level): string {
 		$class = theme_get_array_value($this->attr, 'class', '');
-		$class = 'menu-item-' . $this->id . (strlen((string) $class) > 0 ? ' ' : '') . $class;
+		$class = 'menu-item-' . $this->id . ((string) $class !== '' ? ' ' : '') . $class;
 		$this->attr['class'] = ($this->active ? 'active' : null);
 		$title = apply_filters('the_title', $this->title, $this->id);
 		if (theme_get_option('theme_menu_trim_title')) {

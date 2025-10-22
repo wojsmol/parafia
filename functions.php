@@ -397,11 +397,11 @@ function theme_get_post_class(): string {
 
 function theme_get_metadata_icons($icons = '', $class = ''): ?string {
     global $post;
-    if (!is_string($icons) || theme_strlen($icons) == 0) {
+    if (!is_string($icons) || theme_strlen($icons) === 0) {
         return null;
     }
     $icons = explode(",", str_replace(' ', '', $icons));
-    if (count($icons) == 0) {
+    if (count($icons) === 0) {
         return null;
     }
     $result = [];
@@ -430,7 +430,7 @@ function theme_get_metadata_icons($icons = '', $class = ''): ?string {
                 break;
             case 'category':
                 $categories = get_the_category_list(', ');
-                if (theme_strlen($categories) == 0) {
+                if (theme_strlen($categories) === 0) {
                     break;
                 }
                 $result[] = '<span class="kuj-postcategoryicon">' . sprintf(__('<span class="%1$s">Posted in</span> %2$s', THEME_NS), 'categories', get_the_category_list(', ')) . '</span>';
@@ -730,7 +730,7 @@ function theme_get_adjacent_post_link($format, $link, $in_same_cat = false, $exc
         return null;
     }
 
-    $title = strip_tags($post->post_title);
+    $title = strip_tags((string) $post->post_title);
 
     if (empty($post->post_title)) {
         $title = $previous ? __('Previous Post', THEME_NS) : __('Next Post', THEME_NS);
