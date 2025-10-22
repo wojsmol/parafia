@@ -6,7 +6,7 @@ use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
 
 return static function (RectorConfig $rectorConfig): void {
-    // Ścieżka ustawiona na __DIR__ (katalog główny repozytorium).
+    // Określamy ścieżki do plików, które mają być analizowane i refaktoryzowane
     $rectorConfig->paths([
         __DIR__,
     ]);
@@ -17,23 +17,35 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/rector.php',
     ]);
 
-    // Ustawiamy docelową wersję PHP
-    $rectorConfig->phpVersion(80400); // PHP 8.4
+    // Ustawiamy docelową wersję PHP, do której ma migrować Rector.
+    // Docelowa wersja PHP to 8.4 (80400).
+    $rectorConfig->phpVersion(80400);
 
-    // Importujemy zestawy reguł
+    // Importujemy zestawy reguł od PHP 5.3 do 8.4, aby zapewnić kompletną migrację.
     $rectorConfig->sets([
-        // Najważniejsze zestawy do migracji na PHP 8.4
-        SetList::PHP_84,
-        SetList::PHP_83,
-        SetList::PHP_82,
-        SetList::PHP_81,
-        SetList::PHP_80,
+        // MODERNIZACJA KROK PO KROKU (od PHP 5.3 do 8.4)
+        SetList::PHP_53,
+        SetList::PHP_54,
+        SetList::PHP_55,
+        SetList::PHP_56,
+        
+        SetList::PHP_70,
+        SetList::PHP_71,
+        SetList::PHP_72,
+        SetList::PHP_73,
+        SetList::PHP_74,
 
-        // Agresywne zestawy modernizujące (sprawdzone i stabilne z obecną wersją Rectora):
+        SetList::PHP_80,
+        SetList::PHP_81,
+        SetList::PHP_82,
+        SetList::PHP_83,
+        SetList::PHP_84, // Docelowa wersja
+
+        // AGRESYWNA MODERNIZACJA I ULEPSZANIE KODU
         SetList::CODE_QUALITY,
-        SetList::TYPE_DECLARATION,   // Dodaje typy zwracane i właściwości
+        SetList::TYPE_DECLARATION,
         SetList::EARLY_RETURN,
-        SetList::DEAD_CODE,         // Usuwa nieużywany kod i zmienne
-        SetList::PRIVATIZATION,     // Dodaje private/readonly, promuje właściwości
+        SetList::DEAD_CODE,         // Usuwa nieużywany kod
+        SetList::PRIVATIZATION,     // Dodaje private/readonly i promuje w konstruktorach
     ]);
 };
