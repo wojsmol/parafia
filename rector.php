@@ -3,42 +3,46 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\Core\ValueObject\PhpVersion;
+use Rector\Renaming\Rector\FuncCall\RenameFunctionRector;
+use Rector\CodingStyle\Rector\FuncCall\FullyQualifiedStrictTypesRector;
 use Rector\Set\ValueObject\SetList;
-use Rector\Core\ValueObject\LevelSetList;
-use Rector\Autodiscovery\Rector\Namespace_\AddNamespaceByDirectoryRector;
-use Rector\Autodiscovery\ValueObject\NamespaceByDirectory;
 
 return static function (RectorConfig $rectorConfig): void {
-
-    // paths to scan
+    // 1️⃣ Skany folderów
     $rectorConfig->paths([
         __DIR__ . '/library',
-        __DIR__,
+        __DIR__ . '/functions.php',
+        __DIR__ . '/index.php',
+        __DIR__ . '/template-parts',
+        __DIR__ . '/assets', // opcjonalnie, jeśli są php
     ]);
 
-    // skip WP core templates / vendor / tests
+    // 2️⃣ Wykluczenia
     $rectorConfig->skip([
         __DIR__ . '/vendor',
         __DIR__ . '/node_modules',
-        __DIR__ . '/assets',
         __DIR__ . '/tests',
-        __DIR__ . '/functions.php',
-        __DIR__ . '/header.php',
-        __DIR__ . '/footer.php',
-        __DIR__ . '/index.php',
     ]);
 
-    // rector sets
+    // 3️⃣ Docelowa wersja PHP
+    $rectorConfig->phpVersion(PhpVersion::PHP_84);
+
+    // 4️⃣ Używamy standardowych zestawów
     $rectorConfig->sets([
-        LevelSetList::UP_TO_PHP_84,   // PHP 8.4 migration
+        SetList::PHP_74,
+        SetList::PHP_80,
         SetList::CODE_QUALITY,
-        SetList::CODING_STYLE,
         SetList::DEAD_CODE,
+        SetList::TYPE_DECLARATION,
     ]);
 
-    // add namespace
-    $rectorConfig->ruleWithConfiguration(AddNamespaceByDirectoryRector::class, [
-        new NamespaceByDirectory('Parafia', __DIR__ . '/library'),
-        new NamespaceByDirectory('Parafia', __DIR__), // main folder, except skipped files
+    // 5️⃣ Namespacing bibliotek
+    $rectorConfig->autoloadPaths([
+        __DIR__ . '/library',
     ]);
+
+    // 6️⃣ Globalne funkcje WP: doda \ do każdej wywoływanej w namespace
+    $rectorConfig->rule(FullyQualifiedStrictTypesRector::class);
+	);
 };
