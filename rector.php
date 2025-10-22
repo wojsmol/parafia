@@ -14,8 +14,6 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/library',
         __DIR__ . '/functions.php',
         __DIR__ . '/index.php',
-        __DIR__ . '/template-parts',
-        __DIR__ . '/assets', // opcjonalnie, jeśli są php
     ]);
 
     // 2️⃣ Wykluczenia
@@ -44,5 +42,4 @@ return static function (RectorConfig $rectorConfig): void {
 
     // 6️⃣ Globalne funkcje WP: doda \ do każdej wywoływanej w namespace
     $rectorConfig->rule(FullyQualifiedStrictTypesRector::class);
-	);
 };
