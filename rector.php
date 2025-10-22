@@ -4,41 +4,41 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
+use Rector\Core\ValueObject\LevelSetList;
+use Rector\Autodiscovery\Rector\Namespace_\AddNamespaceByDirectoryRector;
+use Rector\Autodiscovery\ValueObject\NamespaceByDirectory;
 
 return static function (RectorConfig $rectorConfig): void {
-    // Foldery do skanowania
+
+    // paths to scan
     $rectorConfig->paths([
-        __DIR__,               // główny katalog szablonu
-        __DIR__ . '/library',  // katalog z kodem PHP
+        __DIR__ . '/library',
+        __DIR__,
     ]);
 
-    // Wykluczenia folderów nieistotnych
+    // skip WP core templates / vendor / tests
     $rectorConfig->skip([
         __DIR__ . '/vendor',
         __DIR__ . '/node_modules',
         __DIR__ . '/assets',
         __DIR__ . '/tests',
+        __DIR__ . '/functions.php',
+        __DIR__ . '/header.php',
+        __DIR__ . '/footer.php',
+        __DIR__ . '/index.php',
     ]);
 
-    // Zestawy reguł do modernizacji od PHP 5.3 do 8.4
+    // rector sets
     $rectorConfig->sets([
-        SetList::PHP_53,
-        SetList::PHP_54,
-        SetList::PHP_55,
-        SetList::PHP_56,
-        SetList::PHP_70,
-        SetList::PHP_71,
-        SetList::PHP_72,
-        SetList::PHP_73,
-        SetList::PHP_74,
-        SetList::PHP_80,
-        SetList::PHP_81,
-        SetList::PHP_82,
-        SetList::PHP_83,
-        SetList::PHP_84,
+        LevelSetList::UP_TO_PHP_84,   // PHP 8.4 migration
+        SetList::CODE_QUALITY,
+        SetList::CODING_STYLE,
+        SetList::DEAD_CODE,
     ]);
 
-    // Ułatwienia dla kodu WordPress
-    $rectorConfig->importNames();       // automatyczny use
-    $rectorConfig->importShortClasses(); // krótkie nazwy klas
+    // add namespace
+    $rectorConfig->ruleWithConfiguration(AddNamespaceByDirectoryRector::class, [
+        new NamespaceByDirectory('Parafia', __DIR__ . '/library'),
+        new NamespaceByDirectory('Parafia', __DIR__), // main folder, except skipped files
+    ]);
 };
