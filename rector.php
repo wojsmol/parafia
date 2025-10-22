@@ -29,12 +29,11 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::PHP_81,
         SetList::PHP_80,
 
-        // Agresywne zestawy modernizujące:
+        // Agresywne zestawy modernizujące (sprawdzone i stabilne z obecną wersją Rectora):
         SetList::CODE_QUALITY,
-        SetList::TYPE_DECLARATION, // Dodaje typy zwracane i właściwości
+        SetList::TYPE_DECLARATION,   // Dodaje typy zwracane i właściwości
         SetList::EARLY_RETURN,
         SetList::DEAD_CODE,         // Usuwa nieużywany kod i zmienne
-        SetList::PRIVATIZATION,     // Dodaje private/readonly do właściwości i promuje je w konstruktorach
-        SetList::NAMED_ARGUMENTS,   // Używa named arguments (np. str_replace(search: ...))
+        SetList::PRIVATIZATION,     // Dodaje private/readonly, promuje właściwości
     ]);
 };
