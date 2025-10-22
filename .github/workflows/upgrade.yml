@@ -10,7 +10,6 @@ jobs:
   modernize:
     permissions:
       contents: write
-
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup PHP 8.4
+      # 2️⃣ Ustawienie PHP 8.4
       - name: Set up PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
@@ -26,39 +25,32 @@ jobs:
           extensions: json, curl, mbstring, dom, xml
           tools: composer, phpcs
 
-      # 3️⃣ Install base dependencies
-      - name: Install Composer dependencies
+      # 3️⃣ Instalacja podstawowych zależności z lockfile
+      - name: Install base dependencies
         run: composer install --no-interaction --prefer-dist
 
-      # 4️⃣ Remove potencjalnie konfliktujące pakiety
-      - name: Remove old Rector dependencies
+      # 4️⃣ Usuń stare wersje Rectora i PHPStan (jeśli istnieją)
+      - name: Remove old Rector and PHPStan packages
         run: |
-          composer remove rector/rector rector/rector-phpunit --dev || true
+          composer remove rector/rector rector/rector-phpunit szepeviktor/phpstan-wordpress --dev || true
 
-      # 5️⃣ Install Rector 2.2 + Rector PHPUnit sets + PHPStan 1.12
-      - name: Install Rector + PHPStan
+      # 5️⃣ Instalacja Rector 2.2 + PHPStan 2.1
+      - name: Install Rector 2.2 and PHPStan 2.1
         run: |
-          composer require --dev rector/rector:^2.2 rector/rector-phpunit:^1.1 -W
-          composer require --dev phpstan/phpstan:^1.12 -W
+          composer require --dev phpstan/phpstan:^2.1 -W
+          composer require --dev rector/rector:^2.2 -W
 
-      # 6️⃣ Rebuild Composer autoloader
-      - name: Rebuild autoloader
+      # 6️⃣ Rebuild autoloader
+      - name: Rebuild Composer autoloader
         run: composer dump-autoload -o
 
-      # 7️⃣ Run Rector
+      # 7️⃣ Uruchom Rector z własną konfiguracją
       - name: Run Rector
         run: vendor/bin/rector process --config rector.php --ansi --no-progress-bar
 
-      # 8️⃣ Commit & push changes if Rector wprowadzi zmiany
+      # 8️⃣ Automatyczny commit i push zmian
       - name: Commit and Push changes
-        id: git-check
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            git add .
-            git commit -m "ci: Rector automatic PHP/WP modernization"
-            git push
-          else
-            echo "No changes from Rector"
-          fi
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'ci: Rector automatic PHP/WP modernization'
+          branch: main
