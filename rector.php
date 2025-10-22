@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
-use Rector\CodingStyle\Rector\LineEnding\LineEndingRector; // Ta linia została dodana!
 
 return static function (RectorConfig $rectorConfig): void {
     // Określamy ścieżki do plików, które mają być analizowane i refaktoryzowane
@@ -22,9 +21,9 @@ return static function (RectorConfig $rectorConfig): void {
     // Docelowa wersja PHP to 8.4 (80400).
     $rectorConfig->phpVersion(80400);
 
-    // Importujemy zestawy reguł od PHP 5.3 do 8.4, aby zapewnić kompletną migrację.
+    // Importujemy najbardziej agresywne zestawy reguł od PHP 5.3 do 8.4, aby wymusić maksymalną modernizację.
     $rectorConfig->sets([
-        // MODERNIZACJA KROK PO KROKU (od PHP 5.3 do 8.4)
+        // MODERNIZACJA KROK PO KROKU
         SetList::PHP_53,
         SetList::PHP_54,
         SetList::PHP_55,
@@ -40,19 +39,18 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::PHP_81,
         SetList::PHP_82,
         SetList::PHP_83,
-        SetList::PHP_84, // Docelowa wersja
+        SetList::PHP_84,
 
-        // AGRESYWNA MODERNIZACJA I ULEPSZANIE KODU
+        // AGRESYWNE ZESTAWY JAKOŚCI KODU I TYPOWANIA
         SetList::CODE_QUALITY,
         SetList::TYPE_DECLARATION,
+        SetList::TYPE_DECLARATION_STRICT,
         SetList::EARLY_RETURN,
-        SetList::DEAD_CODE,         // Usuwa nieużywany kod
-        SetList::PRIVATIZATION,     // Dodaje private/readonly i promuje w konstruktorach
-    ]);
-
-    // Wymuszanie jednolitego formatu końca linii (EOL) na LF (\n),
-    // aby uniknąć problemów w GitHub Actions i w systemach Linux/macOS.
-    $rectorConfig->ruleWithConfiguration(LineEndingRector::class, [
-        'line_ending' => "\n",
+        SetList::DEAD_CODE,
+        SetList::PRIVATIZATION,
+        SetList::CODING_STYLE,
+        SetList::CONTROVERSIAL,
+        SetList::STRICT_BOOLEANS,
     ]);
 };
+
