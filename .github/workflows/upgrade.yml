@@ -1,4 +1,4 @@
-name: PHP Code Modernization and Upgrade
+name: Prepare Rector 2.x Environment
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  modernize:
+  setup:
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -25,21 +25,28 @@ jobs:
           extensions: json, curl, mbstring, dom, xml
           tools: composer, phpcs
 
-      # 3️⃣ Install dependencies from lockfile
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      # 4️⃣ Rebuild Composer autoloader
+      # 4️⃣ Remove old Rector/PHPStan packages if they exist
+      - name: Remove old Rector/PHPStan packages
+        run: |
+          composer remove rector/rector rector/rector-phpunit phpstan/phpstan --dev || true
+
+      # 5️⃣ Install Rector 2.x and PHPStan 2.x
+      - name: Install Rector 2.x and PHPStan 2.x
+        run: |
+          composer require --dev phpstan/phpstan:^2.1 -W
+          composer require --dev rector/rector:^2.2 -W
+
+      # 6️⃣ Rebuild Composer autoloader
       - name: Rebuild Composer autoloader
         run: composer dump-autoload -o
 
-      # 5️⃣ Run Rector (automatically modernizes PHP & WP code)
-      - name: Run Rector
-        run: vendor/bin/rector process --config rector.php --ansi --no-progress-bar
-
-      # 6️⃣ Commit & push changes made by Rector
-      - name: Commit and push Rector changes
+      # 7️⃣ Commit & push changes
+      - name: Commit and push dependency updates
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'ci: Rector automatic PHP/WP modernization'
+          commit_message: 'ci: Update Rector 2.x + PHPStan 2.x'
           branch: main
