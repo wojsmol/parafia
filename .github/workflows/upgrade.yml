@@ -8,6 +8,10 @@ on:
 
 jobs:
   modernize:
+    # KLUCZOWY KROK: Nadanie uprawnień do zapisu (write) dla bota akcji, co naprawia błąd 403.
+    permissions:
+      contents: write
+      
     runs-on: ubuntu-latest
     
     steps:
@@ -31,7 +35,6 @@ jobs:
       run: composer require --dev fsylum/rector-wordpress szepeviktor/phpstan-wordpress --no-scripts
       
     # 3. KRYTYCZNY KROK: Ostateczna aktualizacja i wymuszenie świeżego autoloadera dla Rectora
-    # Ten krok gwarantuje, że definicje stałych są widoczne tuż przed uruchomieniem.
     - name: Final Rector Update and Autoloader Rebuild
       run: composer update rector/rector --with-all-dependencies --ignore-platform-reqs
 
