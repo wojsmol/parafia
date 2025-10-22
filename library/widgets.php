@@ -3,16 +3,16 @@
 global $theme_widgets_style;
 $theme_widgets_style = array(
 	'default' => __('sidebar default', THEME_NS),
-	'block'   => __('block', THEME_NS),
-	'post'    => __('post', THEME_NS),
-	'simple'  => __('simple text', THEME_NS)
+	'block' => __('block', THEME_NS),
+	'post' => __('post', THEME_NS),
+	'simple' => __('simple text', THEME_NS)
 );
 
 function theme_get_widget_style($id, $style = null) {
 
 	if (theme_is_vmenu_widget($id)) {
-     return 'vmenu';
- }
+		return 'vmenu';
+	}
 
 	$result = theme_get_widget_meta_option($id, 'theme_widget_styles');
 	global $theme_widgets_style;
@@ -119,35 +119,35 @@ function theme_widget_extra_control(...$params): ?false {
 	<h3 style="margin-bottom:3px;"><?php _e('Theme Options', THEME_NS); ?></h3>
 	<?php
 	theme_print_meta_box($id, $_theme_widget_meta_options);
- return null;
+	return null;
 }
 
 // widgets
 
 class VMenuWidget extends WP_Widget {
 
-	function VMenuWidget(): void {
+	function __construct() {
 		$widget_ops = array('classname' => 'vmenu', 'description' => __('Use this widget to add one of your custom menus as a widget.', THEME_NS));
-		parent::WP_Widget(false, __('Vertical Menu', THEME_NS), $widget_ops);
+		parent::__construct(false, __('Vertical Menu', THEME_NS), $widget_ops);
 	}
 
 	#[\Override]
- function widget($args, $instance): void {
+	function widget($args, $instance): void {
 		extract($args);
 		$title = apply_filters('widget_title', $instance['title'], $instance, $this->id_base);
 		echo $before_widget;
 		echo $before_title . $title . $after_title;
 		echo theme_get_menu(array(
 			'source' => $instance['source'],
-			'depth'  => theme_get_option('theme_vmenu_depth'),
-			'menu'   => wp_get_nav_menu_object($instance['nav_menu']),
-			'class'  => 'kuj-vmenu'
+			'depth' => theme_get_option('theme_vmenu_depth'),
+			'menu' => wp_get_nav_menu_object($instance['nav_menu']),
+			'class' => 'kuj-vmenu'
 		));
 		echo $after_widget;
 	}
 
 	#[\Override]
- function update($new_instance, $old_instance) {
+	function update($new_instance, $old_instance) {
 		$instance['title'] = strip_tags((string) $new_instance['title']);
 		$instance['source'] = $new_instance['source'];
 		$instance['nav_menu'] = (int) $new_instance['nav_menu'];
@@ -155,7 +155,7 @@ class VMenuWidget extends WP_Widget {
 	}
 
 	#[\Override]
- function form($instance): void {
+	function form($instance): void {
 		//Defaults
 		$instance = wp_parse_args((array) $instance, array('title' => '', 'source' => 'Pages', 'nav_menu' => ''));
 		$title = esc_attr($instance['title']);
@@ -165,10 +165,10 @@ class VMenuWidget extends WP_Widget {
 		// Get menus
 		$menus = get_terms('nav_menu', array('hide_empty' => false));
 		$sources = array(
-                      'Pages' => __('Pages', THEME_NS), 
-                      'Categories' => __('Categories', THEME_NS), 
-                      'Custom Menu' => __('Custom Menu', THEME_NS)
-                      );
+			'Pages' => __('Pages', THEME_NS),
+			'Categories' => __('Categories', THEME_NS),
+			'Custom Menu' => __('Custom Menu', THEME_NS)
+		);
 		?>
 		<p>
 			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', THEME_NS) ?></label>
@@ -186,8 +186,8 @@ class VMenuWidget extends WP_Widget {
 		</select>
 		</p>
 		<p class="p-<?php echo $this->get_field_id('nav_menu'); ?>" <?php if ($source !== 'Custom Menu') {
-      echo ' style="display:none"' ?>
-  }>
+			echo ' style="display:none"';
+		} ?>>
 		<?php
 		// If no menus exists, direct the user to go and create some.
 		if (!$menus) {
@@ -214,13 +214,13 @@ class VMenuWidget extends WP_Widget {
 
 class LoginWidget extends WP_Widget {
 
-	function LoginWidget(): void {
+	function __construct() {
 		$widget_ops = array('classname' => 'login', 'description' => __('Login form', THEME_NS));
-		$this->WP_Widget(false, __('Login', THEME_NS), $widget_ops);
+		parent::__construct(false, __('Login', THEME_NS), $widget_ops);
 	}
 
 	#[\Override]
- function widget($args, $instance): void {
+	function widget($args, $instance): void {
 		global $user_ID, $user_identity, $user_level, $user_email, $user_login;
 		extract($args);
 		echo $before_widget;
