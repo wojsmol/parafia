@@ -1,59 +1,47 @@
-name: PHP 8.4 Upgrade and Auto-Fix
+name: PHP Code Modernization and Upgrade
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
-
-# Nadajemy uprawnienia do zapisu, aby Rector mógł automatycznie commitować zmiany.
-permissions:
-  contents: write
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  # Zadanie 2: Automatyczne poprawki Rectorem i commitowanie
-  rector_fix_and_commit:
-    name: Auto-Refactoring (Rector)
+  modernize:
     runs-on: ubuntu-latest
     
-    # To zadanie uruchamiamy tylko na push do głównej gałęzi (nie na PR i nie po Rectora commit)
-    if: github.event_name == 'push' && github.event.commits[0].committer.username != 'github-actions[bot]'
-
     steps:
-      - name: Checkout kod
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Instalacja PHP i rozszerzeń
-        uses: shivammathur/setup-php@v2
-        with:
-          # Celujemy w najwyższą wersję PHP 8.4
-          php-version: 8.4
-          # Wymagane rozszerzenia do poprawnego działania Composera (naprawia błąd iconv/mbstring)
-          extensions: mbstring, iconv 
-          coverage: none
+    # Ustawienie PHP 8.4 dla wszystkich narzędzi
+    - name: Set up PHP 8.4
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: json, curl, mbstring, dom, xml
+        tools: composer, phpcs
 
-      - name: Buforowanie zależności Composera
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-          
-      - name: Update Rector to latest version
-        run: composer require --dev rector/rector-wordpress szepeviktor/phpstan-wordpress
+    # 1. Instalacja podstawowych zależności
+    - name: Install base dependencies
+      run: composer install --no-interaction --prefer-dist
 
+    # 2. Instalacja rozszerzeń specyficznych dla WordPressa
+    - name: Install Rector WordPress Extensions (using fsylum)
+      run: composer require --dev fsylum/rector-wordpress szepeviktor/phpstan-wordpress --no-scripts
+      
+    # 3. KRYTYCZNY KROK: Ostateczna aktualizacja i wymuszenie świeżego autoloadera dla Rectora
+    # Ten krok gwarantuje, że definicje stałych są widoczne tuż przed uruchomieniem.
+    - name: Final Rector Update and Autoloader Rebuild
+      run: composer update rector/rector --with-all-dependencies --ignore-platform-reqs
 
-     - name: Instalacja zależności Composera
-        run: composer install --no-progress
+    # 4. Uruchomienie procesu modernizacji (za pomocą jawnego binarium PHP)
+    - name: Run Rector
+      run: php -d memory_limit=2G vendor/bin/rector process
 
-      #- name: Uruchomienie Rectora i refaktoryzacja kodu
-        #run: ./vendor/bin/rector process
-
-      - name: Automatyczne commitowanie poprawek Rectora
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Fix: Automated PHP 8.4 compatibility updates via Rector."
-          branch: ${{ github.head_ref || github.ref_name }}
-          # Wymuszenie nowego commita, nawet jeśli Rector nic nie zmienił
-          push_options: '--force' 
+    # 5. Automatyczny commit i push zmian wprowadzonych przez Rectora
+    - name: Commit and Push changes
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: 'ci: Automatic code modernization (Rector)'
+        branch: main
