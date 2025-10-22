@@ -1,4 +1,4 @@
-name: Prepare Rector 2.x Environment
+name: PHP Code Modernization and Upgrade
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup:
+  modernize:
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up PHP 8.4
+      # 2️⃣ Ustawienie PHP 8.4
       - name: Set up PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
@@ -25,28 +25,22 @@ jobs:
           extensions: json, curl, mbstring, dom, xml
           tools: composer, phpcs
 
-      # 3️⃣ Install dependencies
+      # 3️⃣ Instalacja zależności z lockfile
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      # 4️⃣ Remove old Rector/PHPStan packages if they exist
-      - name: Remove old Rector/PHPStan packages
-        run: |
-          composer remove rector/rector rector/rector-phpunit phpstan/phpstan --dev || true
-
-      # 5️⃣ Install Rector 2.x and PHPStan 2.x
-      - name: Install Rector 2.x and PHPStan 2.x
-        run: |
-          composer require --dev phpstan/phpstan:^2.1 -W
-          composer require --dev rector/rector:^2.2 -W
-
-      # 6️⃣ Rebuild Composer autoloader
+      # 4️⃣ Rebuild autoloader (optymalizacja)
       - name: Rebuild Composer autoloader
         run: composer dump-autoload -o
 
-      # 7️⃣ Commit & push changes
-      - name: Commit and push dependency updates
+      # 5️⃣ Uruchom Rector z własną konfiguracją
+      - name: Run Rector
+        run: vendor/bin/rector process --config rector.php --ansi --no-progress-bar
+
+      # 6️⃣ Automatyczny commit i push zmian
+      - name: Commit and Push Rector changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'ci: Update Rector 2.x + PHPStan 2.x'
+          commit_message: 'ci: Rector automatic PHP/WP modernization'
           branch: main
+          file_pattern: '**/*.php'
