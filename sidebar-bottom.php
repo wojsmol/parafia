@@ -6,7 +6,10 @@ foreach ($theme_sidebars as $sidebar){
         continue;
     }
     $widgets = theme_get_dynamic_sidebar_data($sidebar['id']);
-    if (!is_array($widgets) || count($widgets) < 1) {
+    if (!is_array($widgets)) {
+        continue;
+    }
+    if (count($widgets) < 1) {
         continue;
     }
     $places[$sidebar['id']] = $widgets;

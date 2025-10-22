@@ -118,7 +118,7 @@ EOL;
 </div>
 EOL;
 	echo $begin;
-	if ($begin_title && $end_title && !theme_is_empty_html($title)) {
+	if (!theme_is_empty_html($title)) {
 		echo $begin_title . $title . $end_title;
 	}
 	echo $begin_content;
@@ -171,7 +171,7 @@ EOL;
 </div>
 EOL;
 	echo $begin;
-	if ($begin_title && $end_title && !theme_is_empty_html($title)) {
+	if (!theme_is_empty_html($title)) {
 		echo $begin_title . $title . $end_title;
 	}
 	echo $begin_content;

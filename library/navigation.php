@@ -41,7 +41,7 @@ function theme_get_list_menu(array $args = array()) {
      return '';
  }
 	$home_page_id = (int) get_option('page_for_posts');
-	$queried_object = $wp_query->get_queried_object();
+	$wp_query->get_queried_object();
 	$queried_object_id = (int) $wp_query->queried_object_id;
 	$active_ID = null;
 
@@ -72,7 +72,7 @@ function theme_get_list_menu(array $args = array()) {
 	}
 
 	$sorted_menu_items = array();
-	foreach ((array) $menu_items as $key => $menu_item) {
+	foreach ((array) $menu_items as $menu_item) {
 		$sorted_menu_items[$menu_item->menu_order] = wp_setup_nav_menu_item($menu_item);
 	}
 
@@ -106,7 +106,7 @@ function theme_get_list_menu(array $args = array()) {
 
 /* pages */
 
-function theme_get_list_pages($args = array()) {
+function theme_get_list_pages($args = array()): string {
 	global $wp_query;
 	$pages = get_pages($args);
 	if (empty($pages)) {
@@ -196,7 +196,7 @@ function theme_get_list_pages($args = array()) {
 
 /* categories */
 
-function theme_get_list_categories($args = array()) {
+function theme_get_list_categories($args = array()): string {
 	global $wp_query, $post;
 	$categories = &get_categories($args);
 	if (empty($categories)) {
@@ -211,8 +211,6 @@ function theme_get_list_categories($args = array()) {
 	if ($wp_query->is_category) {
 		$currentID = $wp_query->get_queried_object_id();
 	}
-
-	$activeID = $currentID;
 	$activeIDs = theme_get_category_branch($currentID, $categories, $IdToKey);
 	if (theme_get_option('theme_menu_highlight_active_categories') && is_single()) {
 		foreach ((get_the_category($post->ID)) as $cat) {
@@ -402,9 +400,8 @@ function theme_get_pages($pages) {
 	if (!is_array($pages)) {
      $pages = (array) $pages;
  }
-	$pages = array_values($pages);
 
-	return $pages;
+	return array_values($pages);
 }
 
 add_filter('get_pages', 'theme_get_pages');

@@ -405,7 +405,7 @@ function theme_get_metadata_icons($icons = '', $class = ''): ?string {
         return null;
     }
     $icons = explode(",", str_replace(' ', '', $icons));
-    if (!is_array($icons) || count($icons) == 0) {
+    if (count($icons) == 0) {
         return null;
     }
     $result = array();
@@ -612,7 +612,7 @@ function theme_get_excerpt($args = array()) {
     return $excerpt;
 }
 
-function theme_get_search() {
+function theme_get_search(): string|false {
     theme_ob_start();
     get_search_form();
     return theme_ob_get_clean();
@@ -826,7 +826,7 @@ function theme_comment($comment, array $args, $depth): void {
     endswitch;
 }
 
-function theme_get_comments() {
+function theme_get_comments(): string|false {
     if (!theme_get_option('theme_allow_comments')) {
         return '';
     }

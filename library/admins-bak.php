@@ -100,7 +100,7 @@ function theme_print_options(): void {
 function theme_print_option_control(array $op, $val): void {
 	$id = theme_get_array_value($op, 'id');
 	$type = theme_get_array_value($op, 'type');
-	$options = theme_get_array_value($op, 'options');
+	theme_get_array_value($op, 'options');
 	switch ($type) {
 		case "numeric":
 			echo '<input	name="' . $id . '" id="' . $id . '" type="text" value="' . absint($val) . '" class="small-text" />' . "\n";
@@ -267,7 +267,8 @@ function theme_header_image_script_control(): void {
 
 function theme_print_page_header_image_meta_box($post): void {
 	$theme_header_image = theme_get_meta_option($post->ID, 'theme_header_image');
-	$theme_header_image_with_flash = theme_get_meta_option($post->ID, 'theme_header_image_with_flash') ? 'checked="checked" ' : '';
+	if (theme_get_meta_option($post->ID, 'theme_header_image_with_flash')) {
+ }
 	?>
 	<input id="upload_image_input" type="hidden" size="20" tabindex="6"  name="theme_header_image" value="<?php echo $theme_header_image; ?>" autocomplete="off" />
 	<p class="hide-if-no-js image_control">

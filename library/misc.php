@@ -52,8 +52,7 @@ function theme_get_current_url(): string {
 	if ($_SERVER['SERVER_PORT'] != '80') {
 		$pageURL .= ':' . $_SERVER["SERVER_PORT"];
 	}
-	$pageURL .= $_SERVER["REQUEST_URI"];
-	return $pageURL;
+	return $pageURL . $_SERVER["REQUEST_URI"];
 }
 
 function theme_is_current_url($url): bool {
@@ -76,10 +75,13 @@ function theme_prepare_attr($attr = array()): string {
  }
 	$result = '';
 	foreach ($attr as $name => $value) {
-		if (empty($name) || empty($value)) {
+		if (empty($name)) {
       continue;
   }
-		$result .= ' ' . strtolower($name) . '="' . esc_attr($value) . '"';
+  if (empty($value)) {
+      continue;
+  }
+  $result .= ' ' . strtolower($name) . '="' . esc_attr($value) . '"';
 	}
 	return $result;
 }

@@ -235,7 +235,7 @@ class LoginWidget extends WP_Widget {
 				<li><a href="<?php echo esc_url( site_url() ) ?>/wp-admin/post-new.php"><?php _e('Publish', THEME_NS); ?></a></li>
 				<li><a href="<?php echo esc_url( site_url() ) ?>/wp-admin/edit-comments.php"><?php _e('Comments', THEME_NS); ?></a></li>
 			<?php endif; ?>
-			<li><a href="<?php echo wp_logout_url() ?>&amp;redirect_to=<?php echo urlencode((string) theme_get_current_url()); ?>"><?php _e("Log out", THEME_NS); ?></a></li>
+			<li><a href="<?php echo wp_logout_url() ?>&amp;redirect_to=<?php echo urlencode(theme_get_current_url()); ?>"><?php _e("Log out", THEME_NS); ?></a></li>
 			</ul>
 		<?php
 		else:

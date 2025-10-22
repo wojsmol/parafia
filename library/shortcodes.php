@@ -43,9 +43,8 @@ function theme_go_to_top(): string {
 function theme_login_link(): string {
 	if (is_user_logged_in()) {
      return sprintf('<a class="login-link" href="%1$s">%2$s</a>', admin_url(), __('Site Admin', THEME_NS));
- } else {
-     return sprintf('<a class="login-link" href="%1$s">%2$s</a>', wp_login_url(), __('Log in', THEME_NS));
  }
+ return sprintf('<a class="login-link" href="%1$s">%2$s</a>', wp_login_url(), __('Log in', THEME_NS));
 }
 
 // blog title
@@ -94,7 +93,7 @@ function theme_post_link($atts) {
 	}
  return $raw_name;
 }
-function theme_search() {
+function theme_search(): string|false {
 	theme_ob_start();
 	get_search_form();
 	return theme_ob_get_clean();

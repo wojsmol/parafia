@@ -12,7 +12,7 @@
  * More detailed information about smilies: http://codex.wordpress.org/Using_Smilies
  * 
  */
-function theme_get_smilies_js() {
+function theme_get_smilies_js(): string|false {
 	theme_ob_start();
 	?>
 <script type="text/javascript" language="javascript">
