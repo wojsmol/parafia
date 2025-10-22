@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
+use Rector\CodingStyle\Rector\LineEnding\LineEndingRector; // Ta linia została dodana!
 
 return static function (RectorConfig $rectorConfig): void {
     // Określamy ścieżki do plików, które mają być analizowane i refaktoryzowane
@@ -47,5 +48,11 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::EARLY_RETURN,
         SetList::DEAD_CODE,         // Usuwa nieużywany kod
         SetList::PRIVATIZATION,     // Dodaje private/readonly i promuje w konstruktorach
+    ]);
+
+    // Wymuszanie jednolitego formatu końca linii (EOL) na LF (\n),
+    // aby uniknąć problemów w GitHub Actions i w systemach Linux/macOS.
+    $rectorConfig->ruleWithConfiguration(LineEndingRector::class, [
+        'line_ending' => "\n",
     ]);
 };
