@@ -1,10 +1,10 @@
 <?php
 global $theme_sidebars;
-$theme_sidebars = array();
+$theme_sidebars = [];
 
 function theme_add_sidebar($group, $id, $name, $description): void {
     global $theme_sidebars;
-    $theme_sidebars[$id] = array('group' => $group, 'id' => $id, 'name' => $name, 'description' => $description);
+    $theme_sidebars[$id] = ['group' => $group, 'id' => $id, 'name' => $name, 'description' => $description];
 }
 
 theme_add_sidebar('default', 'primary-widget-area', __('Primary Widget Area', THEME_NS), __("This is the default sidebar, visible on 2 or 3 column layouts. If no widgets are active, the default theme widgets will be displayed instead.", THEME_NS));
@@ -28,12 +28,7 @@ if (theme_get_option('theme_override_default_footer_content')) {
 
 global $theme_widget_args;
 
-$theme_widget_args = array(
-    'before_widget' => '<widget id="%1$s" name="%1$s" class="widget %2$s">',
-    'after_title' => '</title>',
-    'before_title' => '<title>',
-    'after_widget' => '</widget>'
-);
+$theme_widget_args = ['before_widget' => '<widget id="%1$s" name="%1$s" class="widget %2$s">', 'after_title' => '</title>', 'before_title' => '<title>', 'after_widget' => '</widget>'];
 
 foreach ($theme_sidebars as $sidebar) {
     register_sidebar(array_merge($sidebar, $theme_widget_args));
@@ -72,7 +67,7 @@ function theme_get_dynamic_sidebar_data($sidebar_id): false|array {
     }
     extract($theme_widget_args);
     $data = explode($after_widget, (string) $content);
-    $widgets = array();
+    $widgets = [];
     $heading = theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_widget_title_tag');
     $counter = count($data);
     for ($i = 0; $i < $counter; $i++) {
@@ -104,15 +99,7 @@ function theme_get_dynamic_sidebar_data($sidebar_id): false|array {
                 $widget = preg_replace('/<title>.*?<\/title>/', '', (string) $widget);
             }
         }
-        $widgets[] = array(
-            'id' => $id,
-            'name' => $name,
-            'class' => $class,
-            'style' => $style,
-            'title' => $title,
-            'heading' => $heading,
-            'content' => $widget
-        );
+        $widgets[] = ['id' => $id, 'name' => $name, 'class' => $class, 'style' => $style, 'title' => $title, 'heading' => $heading, 'content' => $widget];
     }
     return array_filter($widgets, 'theme_is_displayed_widget');
 }

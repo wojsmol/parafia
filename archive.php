@@ -30,7 +30,7 @@ get_header(); ?>
 					echo '<h4>' . sprintf(__('Yearly Archives: <span>%s</span>', THEME_NS), get_the_date('Y')) . '</h4>';
 				} elseif (is_author()) {
 					the_post();
-					echo theme_get_avatar(array('id' => get_the_author_meta('user_email')));
+					echo theme_get_avatar(['id' => get_the_author_meta('user_email')]);
 					echo '<h4>' . get_the_author() . '</h4>';
 					$desc = get_the_author_meta('description');
 					if ($desc) {
@@ -40,7 +40,7 @@ get_header(); ?>
 				} elseif (isset($_GET['paged']) && !empty($_GET['paged'])) {
 					echo '<h4>' . __('Blog Archives', THEME_NS) . '</h4>';
 				}
-				theme_post_wrapper(array('content' => theme_ob_get_clean(), 'class' => 'breadcrumbs'));
+				theme_post_wrapper(['content' => theme_ob_get_clean(), 'class' => 'breadcrumbs']);
 
 				/* Display navigation to next/previous pages when applicable */
 				if (theme_get_option('theme_top_posts_navigation')) {

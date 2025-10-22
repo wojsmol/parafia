@@ -1,12 +1,7 @@
 <?php
 // widget extra options
 global $theme_widgets_style;
-$theme_widgets_style = array(
-	'default' => __('sidebar default', THEME_NS),
-	'block' => __('block', THEME_NS),
-	'post' => __('post', THEME_NS),
-	'simple' => __('simple text', THEME_NS)
-);
+$theme_widgets_style = ['default' => __('sidebar default', THEME_NS), 'block' => __('block', THEME_NS), 'post' => __('post', THEME_NS), 'simple' => __('simple text', THEME_NS)];
 
 function theme_get_widget_style($id, $style = null) {
 
@@ -20,7 +15,7 @@ function theme_get_widget_style($id, $style = null) {
 		$result = 'default';
 	}
 	if ($style != null) {
-		if (!in_array($style, array('block', 'post', 'simple'))) {
+		if (!in_array($style, ['block', 'post', 'simple'])) {
 			$style = 'block';
 		}
 		if ($result == 'default') {
@@ -42,7 +37,7 @@ function theme_widget_expand_control($id): void {
 	global $wp_registered_widget_controls;
 	$controls = &$wp_registered_widget_controls[$id];
 	if (!is_array($controls['params'])) {
-		$controls['params'] = array($controls['params']);
+		$controls['params'] = [$controls['params']];
 	}
 	$controls['params'][] = $id;
 	if (isset($controls['callback'])) {
@@ -90,7 +85,7 @@ function theme_widget_extra_control(...$params): ?false {
 	global $wp_registered_widget_controls, $theme_widgets_style, $theme_widget_meta_options;
 	$_theme_widget_meta_options = $theme_widget_meta_options;
 	$widget_id = $params[count($params) - 1]; // see theme_widget_expand_control func
-	$widget_controls = theme_get_array_value($wp_registered_widget_controls, $widget_id, array());
+	$widget_controls = theme_get_array_value($wp_registered_widget_controls, $widget_id, []);
 	if (isset($widget_controls['callback_redirect'])) {
 		$callback = $widget_controls['callback_redirect'];
 		if (is_callable($callback)) {
@@ -127,7 +122,7 @@ function theme_widget_extra_control(...$params): ?false {
 class VMenuWidget extends WP_Widget {
 
 	function __construct() {
-		$widget_ops = array('classname' => 'vmenu', 'description' => __('Use this widget to add one of your custom menus as a widget.', THEME_NS));
+		$widget_ops = ['classname' => 'vmenu', 'description' => __('Use this widget to add one of your custom menus as a widget.', THEME_NS)];
 		parent::__construct(false, __('Vertical Menu', THEME_NS), $widget_ops);
 	}
 
@@ -137,12 +132,7 @@ class VMenuWidget extends WP_Widget {
 		$title = apply_filters('widget_title', $instance['title'], $instance, $this->id_base);
 		echo $before_widget;
 		echo $before_title . $title . $after_title;
-		echo theme_get_menu(array(
-			'source' => $instance['source'],
-			'depth' => theme_get_option('theme_vmenu_depth'),
-			'menu' => wp_get_nav_menu_object($instance['nav_menu']),
-			'class' => 'kuj-vmenu'
-		));
+		echo theme_get_menu(['source' => $instance['source'], 'depth' => theme_get_option('theme_vmenu_depth'), 'menu' => wp_get_nav_menu_object($instance['nav_menu']), 'class' => 'kuj-vmenu']);
 		echo $after_widget;
 	}
 
@@ -157,18 +147,14 @@ class VMenuWidget extends WP_Widget {
 	#[\Override]
 	function form($instance): void {
 		//Defaults
-		$instance = wp_parse_args((array) $instance, array('title' => '', 'source' => 'Pages', 'nav_menu' => ''));
+		$instance = wp_parse_args((array) $instance, ['title' => '', 'source' => 'Pages', 'nav_menu' => '']);
 		$title = esc_attr($instance['title']);
 		$source = $instance['source'];
 		$nav_menu = $instance['nav_menu'];
 
 		// Get menus
-		$menus = get_terms('nav_menu', array('hide_empty' => false));
-		$sources = array(
-			'Pages' => __('Pages', THEME_NS),
-			'Categories' => __('Categories', THEME_NS),
-			'Custom Menu' => __('Custom Menu', THEME_NS)
-		);
+		$menus = get_terms('nav_menu', ['hide_empty' => false]);
+		$sources = ['Pages' => __('Pages', THEME_NS), 'Categories' => __('Categories', THEME_NS), 'Custom Menu' => __('Custom Menu', THEME_NS)];
 		?>
 		<p>
 			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', THEME_NS) ?></label>
@@ -215,7 +201,7 @@ class VMenuWidget extends WP_Widget {
 class LoginWidget extends WP_Widget {
 
 	function __construct() {
-		$widget_ops = array('classname' => 'login', 'description' => __('Login form', THEME_NS));
+		$widget_ops = ['classname' => 'login', 'description' => __('Login form', THEME_NS)];
 		parent::__construct(false, __('Login', THEME_NS), $widget_ops);
 	}
 

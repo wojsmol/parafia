@@ -44,14 +44,14 @@ if (WP_VERSION < 3.0) {
     }
     return;
 }
-locate_template(array('library/defaults.php'), true);
-locate_template(array('library/misc.php'), true);
-locate_template(array('library/wrappers.php'), true);
-locate_template(array('library/sidebars.php'), true);
-locate_template(array('library/navigation.php'), true);
-locate_template(array('library/shortcodes.php'), true);
-locate_template(array('library/defaults.php'), true);
-locate_template(array('library/widgets.php'), true);
+locate_template(['library/defaults.php'], true);
+locate_template(['library/misc.php'], true);
+locate_template(['library/wrappers.php'], true);
+locate_template(['library/sidebars.php'], true);
+locate_template(['library/navigation.php'], true);
+locate_template(['library/shortcodes.php'], true);
+locate_template(['library/defaults.php'], true);
+locate_template(['library/widgets.php'], true);
 
 function theme_favicon(): void {
     if (is_file(get_template_directory() . '/favicon.ico')):
@@ -94,7 +94,7 @@ add_theme_support( 'title-tag' );
 add_theme_support('post-thumbnails');
 add_theme_support('nav-menus');
 add_theme_support('automatic-feed-links');
-add_theme_support('post-formats', array('aside', 'gallery'));
+add_theme_support('post-formats', ['aside', 'gallery']);
 
 
 function theme_wp_title( $title, $sep ) {
@@ -140,11 +140,7 @@ function theme_show_flash(): bool {
 
 function theme_init_layout(): void {
     global $theme_layout;
-    $theme_layout = array(
-		'header' => 1,
-		'default_sidebar' => 1,
-
-    );
+    $theme_layout = ['header' => 1, 'default_sidebar' => 1];
     $page_id = 0;
     if (is_page()) {
        $page_id = (int)theme_get_the_ID(); 
@@ -172,8 +168,8 @@ function theme_has_layout_part($name): bool {
 }
 
 if (is_admin()) {
-    locate_template(array('library/options.php'), true);
-    locate_template(array('library/admins.php'), true);
+    locate_template(['library/options.php'], true);
+    locate_template(['library/admins.php'], true);
 
     function theme_add_option_page(): void {
         add_theme_page(__('Theme Options', THEME_NS), __('Theme Options', THEME_NS), 'edit_theme_options', basename(__FILE__), 'theme_print_options');
@@ -213,18 +209,18 @@ if (is_admin()) {
     }
     
     if (file_exists(get_template_directory() . '/content/content-importer.php')) {
-        locate_template(array('/content/content-importer.php'), true);
+        locate_template(['/content/content-importer.php'], true);
     }
     return;
 }
 
 function theme_update_scripts(): void {
     global $wp_scripts;
-    wp_register_script('jquery_migrate', get_template_directory_uri()  . '/jquery-migrate-1.1.1.js', array('jquery'));
+    wp_register_script('jquery_migrate', get_template_directory_uri()  . '/jquery-migrate-1.1.1.js', ['jquery']);
     wp_enqueue_script('jquery_migrate');
-	wp_register_script("script.js", get_template_directory_uri() . '/script.js', array('jquery'));
+	wp_register_script("script.js", get_template_directory_uri() . '/script.js', ['jquery']);
 	wp_enqueue_script("script.js");
-	wp_register_script("script.responsive.js", get_template_directory_uri() . '/script.responsive.js', array('jquery'));
+	wp_register_script("script.responsive.js", get_template_directory_uri() . '/script.responsive.js', ['jquery']);
 	wp_enqueue_script("script.responsive.js");
 
 }
@@ -243,12 +239,12 @@ function theme_update_jquery_scripts(): void {
 
 function theme_update_styles(): void {
     global $wp_styles;
-	wp_register_style("style.ie7.css", get_template_directory_uri() . '/style.ie7.css', array(), false, "screen");
+	wp_register_style("style.ie7.css", get_template_directory_uri() . '/style.ie7.css', [], false, "screen");
 	wp_enqueue_style("style.ie7.css");
 	$wp_styles->add_data("style.ie7.css", "conditional", "lte IE 7");
-	wp_register_style("style.responsive.css", get_template_directory_uri() . '/style.responsive.css', array(), false, "all");
+	wp_register_style("style.responsive.css", get_template_directory_uri() . '/style.responsive.css', [], false, "all");
 	wp_enqueue_style("style.responsive.css");
-	wp_register_style("css", 'https://fonts.googleapis.com/css?family=Italianno&subset=latin,latin-ext', array(), false, "all");
+	wp_register_style("css", 'https://fonts.googleapis.com/css?family=Italianno&subset=latin,latin-ext', [], false, "all");
 	wp_enqueue_style("css");
 
 }
@@ -408,7 +404,7 @@ function theme_get_metadata_icons($icons = '', $class = ''): ?string {
     if (count($icons) == 0) {
         return null;
     }
-    $result = array();
+    $result = [];
     $counter = count($icons);
     for ($i = 0; $i < $counter; $i++) {
         $icon = $icons[$i];
@@ -471,10 +467,10 @@ function theme_get_metadata_icons($icons = '', $class = ''): ?string {
     return "<div class=\"kuj-post{$class}icons kuj-metadata-icons\">{$result}</div>";
 }
 
-function theme_get_post_thumbnail($args = array()): string {
+function theme_get_post_thumbnail($args = []): string {
     global $post;
 
-    $size = theme_get_array_value($args, 'size', array(theme_get_option('theme_metadata_thumbnail_width'), theme_get_option('theme_metadata_thumbnail_height')));
+    $size = theme_get_array_value($args, 'size', [theme_get_option('theme_metadata_thumbnail_width'), theme_get_option('theme_metadata_thumbnail_height')]);
     $auto = theme_get_array_value($args, 'auto', theme_get_option('theme_metadata_thumbnail_auto'));
     $featured = theme_get_array_value($args, 'featured', theme_get_option('theme_metadata_use_featured_image_as_thumbnail'));
     $title = theme_get_array_value($args, 'title', get_the_title());
@@ -484,10 +480,10 @@ function theme_get_post_thumbnail($args = array()): string {
 
     if ($featured && (has_post_thumbnail())) {
         theme_ob_start();
-        the_post_thumbnail($size, array('alt' => '', 'title' => $title));
+        the_post_thumbnail($size, ['alt' => '', 'title' => $title]);
         $result = theme_ob_get_clean();
     } elseif ($auto) {
-        $attachments = get_children(array('post_parent' => $post->ID, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order ID'));
+        $attachments = get_children(['post_parent' => $post->ID, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order ID']);
         if ($attachments) {
             $attachment = array_shift($attachments);
             $img = wp_get_attachment_image_src($attachment->ID, $size);
@@ -502,7 +498,7 @@ function theme_get_post_thumbnail($args = array()): string {
     return $result;
 }
 
-function theme_get_content($args = array()): string {
+function theme_get_content($args = []): string {
     global $wp_query;
     $post_id = get_queried_object_id();
     $more_tag = theme_get_array_value($args, 'more_tag', __('Czytaj dalej <span class="meta-nav">&rarr;</span>', THEME_NS));
@@ -516,16 +512,10 @@ function theme_get_content($args = array()): string {
 	if ($ignore_wpautop) {
         add_filter( 'the_content', 'wpautop' );
 	}
-    return $content . wp_link_pages(array(
-                'before' => '<p><span class="page-navi-outer page-navi-caption"><span class="page-navi-inner">' . __('Pages', THEME_NS) . ': </span></span>',
-                'after' => '</p>',
-                'link_before' => '<span class="page-navi-outer"><span class="page-navi-inner">',
-                'link_after' => '</span></span>',
-                'echo' => 0
-            ));
+    return $content . wp_link_pages(['before' => '<p><span class="page-navi-outer page-navi-caption"><span class="page-navi-inner">' . __('Pages', THEME_NS) . ': </span></span>', 'after' => '</p>', 'link_before' => '<span class="page-navi-outer"><span class="page-navi-inner">', 'link_after' => '</span></span>', 'echo' => 0]);
 }
 
-function theme_get_excerpt($args = array()) {
+function theme_get_excerpt($args = []) {
     global $post;
     $more_tag = theme_get_array_value($args, 'more_tag', __('Czytaj dalej <span class="meta-nav">&rarr;</span>', THEME_NS));
     $auto = theme_get_array_value($args, 'auto', theme_get_option('theme_metadata_excerpt_auto'));
@@ -566,20 +556,20 @@ function theme_get_excerpt($args = array()) {
             $excerpt = str_replace($more_token, $more_tag, $excerpt);
         } elseif ($auto && is_numeric($all_words)) {
             $token = "%theme_tag_token%";
-            $content_parts = explode($token, str_replace(array('<', '>'), array($token . '<', '>' . $token), $excerpt));
-            $content = array();
+            $content_parts = explode($token, str_replace(['<', '>'], [$token . '<', '>' . $token], $excerpt));
+            $content = [];
             $word_count = 0;
             foreach ($content_parts as $part) {
                 if (theme_strpos($part, '<') !== false || theme_strpos($part, '>') !== false) {
-                    $content[] = array('type' => 'tag', 'content' => $part);
+                    $content[] = ['type' => 'tag', 'content' => $part];
                 } else {
                     $all_chunks = preg_split('/([\s])/u', $part, -1, PREG_SPLIT_DELIM_CAPTURE);
                     foreach ($all_chunks as $chunk) {
                         if ('' !== trim($chunk)) {
-                            $content[] = array('type' => 'word', 'content' => $chunk);
+                            $content[] = ['type' => 'word', 'content' => $chunk];
                             $word_count += 1;
                         } elseif ($chunk !== '') {
-                            $content[] = array('type' => 'space', 'content' => $chunk);
+                            $content[] = ['type' => 'space', 'content' => $chunk];
                         }
                     }
                 }
@@ -623,18 +613,11 @@ function theme_is_home(): bool {
 }
 
 function theme_404_content($args = ''): void {
-    $args = wp_parse_args($args, array(
-        'error_title' => __('Not Found', THEME_NS),
-        'error_message' => __('Apologies, but the page you requested could not be found. Perhaps searching will help.', THEME_NS),
-        'focus_script' => '<script type="text/javascript">jQuery(\'div.kuj-content input[name="s"]\').focus();</script>'
-            )
+    $args = wp_parse_args($args, ['error_title' => __('Not Found', THEME_NS), 'error_message' => __('Apologies, but the page you requested could not be found. Perhaps searching will help.', THEME_NS), 'focus_script' => '<script type="text/javascript">jQuery(\'div.kuj-content input[name="s"]\').focus();</script>']
     );
     extract($args);
     theme_post_wrapper(
-            array(
-                'title' => $error_title,
-                'content' => '<p class="center">' . $error_message . '</p>' . "\n" . theme_get_search() . $focus_script
-            )
+            ['title' => $error_title, 'content' => '<p class="center">' . $error_message . '</p>' . "\n" . theme_get_search() . $focus_script]
     );
 
     if (theme_get_option('theme_show_random_posts_on_404_page')) {
@@ -651,13 +634,13 @@ function theme_404_content($args = ''): void {
         <?php endforeach; ?>
         </ul>
         <?php
-        theme_post_wrapper(array('content' => theme_ob_get_clean()));
+        theme_post_wrapper(['content' => theme_ob_get_clean()]);
     }
     if (theme_get_option('theme_show_tags_on_404_page')) {
         theme_ob_start();
         echo '<h4 class="box-title">' . theme_get_option('theme_show_tags_title_on_404_page') . '</h4>';
         wp_tag_cloud('smallest=9&largest=22&unit=pt&number=200&format=flat&orderby=name&order=ASC');
-        theme_post_wrapper(array('content' => theme_ob_get_clean()));
+        theme_post_wrapper(['content' => theme_ob_get_clean()]);
     }
 }
 
@@ -665,17 +648,12 @@ function theme_page_navigation(): void {
     global $wp_query;
     $total_pages = $wp_query->max_num_pages;
     if($total_pages > 1) {
-        echo theme_stylize_pagination(paginate_links(array(
-            'base'  =>  str_replace(PHP_INT_MAX, '%#%', get_pagenum_link(PHP_INT_MAX, false)),
-            'format' => '',
-            'current'   =>  max(1, get_query_var('paged')),
-            'total'     =>  $total_pages
-        )));
+        echo theme_stylize_pagination(paginate_links(['base'  =>  str_replace(PHP_INT_MAX, '%#%', get_pagenum_link(PHP_INT_MAX, false)), 'format' => '', 'current'   =>  max(1, get_query_var('paged')), 'total'     =>  $total_pages]));
     }
 }
 
 function theme_post_navigation($args = ''): void {
-    $args = wp_parse_args($args, array('wrap' => true, 'prev_link' => false, 'next_link' => false));
+    $args = wp_parse_args($args, ['wrap' => true, 'prev_link' => false, 'next_link' => false]);
     $prev_link = $args['prev_link'];
     $next_link = $args['next_link'];
     $content = '';
@@ -694,7 +672,7 @@ function theme_post_navigation($args = ''): void {
 EOL;
     }
     if ($args['wrap']) {
-        theme_post_wrapper(array('content' => $content));
+        theme_post_wrapper(['content' => $content]);
     } else {
         echo $content;
     }
@@ -711,7 +689,7 @@ function theme_get_next_post_link($format = '%link &raquo;', $link = '%title', $
 function theme_get_adjacent_image_link($prev = true, $size = 'thumbnail', $text = false) {
     global $post;
     $post = get_post($post);
-    $attachments = array_values(get_children(array('post_parent' => $post->post_parent, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order ID')));
+    $attachments = array_values(get_children(['post_parent' => $post->post_parent, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order ID']));
 
     foreach ($attachments as $k => $attachment)
         if ($attachment->ID == $post->ID) {
@@ -780,7 +758,7 @@ function theme_get_adjacent_post_link($format, $link, $in_same_cat = false, $exc
 
 function theme_stylize_pagination($pagination): string|array|int|float|false|null {
     if ($pagination) {
-        return '<div class="kuj-pager">' . str_replace(array('current', 'dots'), array('current active', 'dots more'), $pagination) . '</div>';
+        return '<div class="kuj-pager">' . str_replace(['current', 'dots'], ['current active', 'dots more'], $pagination) . '</div>';
     }
     return $pagination;
 }
@@ -799,7 +777,7 @@ function theme_comment($comment, array $args, $depth): void {
         ?>
         <li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
             <div class="kuj-comment <?php echo $comment->comment_type ?> clearfix" id="comment-<?php comment_ID() ?>">
-    <div class="kuj-comment-avatar"><?php echo str_replace (array('height="150"', 'width="150"', "height='150'", "width='150'"), array('height="100%"', 'width="100%"', "height='100%'", "width='100%'"), theme_get_avatar(array('id' => $comment, 'size' => 150))); ?></div>
+    <div class="kuj-comment-avatar"><?php echo str_replace (['height="150"', 'width="150"', "height='150'", "width='150'"], ['height="100%"', 'width="100%"', "height='100%'", "width='100%'"], theme_get_avatar(['id' => $comment, 'size' => 150])); ?></div>
     <div class="kuj-comment-inner">
         <div class="kuj-comment-header comment-meta commentmetadata"><?php printf(__('%s on ', THEME_NS), get_comment_author_link($comment->comment_ID)); ?>
 <a href="<?php echo esc_url(get_comment_link($comment->comment_ID)); ?>"><?php printf(__('%1$s at %2$s', THEME_NS), get_comment_date(), get_comment_time()); ?></a>
@@ -809,7 +787,7 @@ function theme_comment($comment, array $args, $depth): void {
     <br />
 <?php endif; ?>
 <?php comment_text(); ?></div>
-        <div class="kuj-comment-footer reply"><?php comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth']))); ?></div>
+        <div class="kuj-comment-footer reply"><?php comment_reply_link(array_merge($args, ['depth' => $depth, 'max_depth' => $args['max_depth']])); ?></div>
     </div>
 </div>
             <?php
@@ -845,7 +823,7 @@ function theme_get_avatar($args = '') {
     if (empty($default) || $default === 'mystery') {
         $default = get_template_directory_uri() . '/images/no-avatar.jpg';
     }
-    $args = wp_parse_args($args, array('id' => false, 'size' => 96, 'default' => $default, 'alt' => false, 'url' => false));
+    $args = wp_parse_args($args, ['id' => false, 'size' => 96, 'default' => $default, 'alt' => false, 'url' => false]);
     extract($args);
     $result = get_avatar($id, $size, $default, $alt);
     if ($result && $url) {

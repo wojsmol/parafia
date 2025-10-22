@@ -22,7 +22,7 @@
  */
 global $post;
 theme_ob_start();
-$images = get_children(array('post_parent' => $post->ID, 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'menu_order', 'order' => 'ASC', 'numberposts' => 999));
+$images = get_children(['post_parent' => $post->ID, 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'menu_order', 'order' => 'ASC', 'numberposts' => 999]);
 if ($images) {
 	$total_images = count($images);
 	$image = array_shift($images);
@@ -40,15 +40,7 @@ if ($images) {
 		}
 		echo theme_get_excerpt();
 		theme_post_wrapper(
-				array(
-					'id' => theme_get_post_id(),
-					'class' => theme_get_post_class(),
-					'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>',
-					'heading' => theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_article_title_tag'),
-					'before' => theme_get_metadata_icons('', 'header'),
-					'content' => theme_ob_get_clean(),
-					'after' => theme_get_metadata_icons('', 'footer')
-				)
+				['id' => theme_get_post_id(), 'class' => theme_get_post_class(), 'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>', 'heading' => theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_article_title_tag'), 'before' => theme_get_metadata_icons('', 'header'), 'content' => theme_ob_get_clean(), 'after' => theme_get_metadata_icons('', 'footer')]
 		);
 
 		

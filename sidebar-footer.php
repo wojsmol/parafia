@@ -1,6 +1,6 @@
 <?php
 global $theme_sidebars;
-$places = array();
+$places = [];
 foreach ($theme_sidebars as $sidebar){
     if ($sidebar['group'] !== 'footer') {
         continue;
@@ -34,7 +34,7 @@ if (theme_get_option('theme_override_default_footer_content')) {
             foreach ($widgets as $widget) {
                  $is_simple = ('simple' == $widget['style']);
                  if ($is_simple) {
-                     $widget['class'] = implode(' ', array_merge(explode(' ', (string) theme_get_array_value($widget, 'class', '')), array('kuj-footer-text')));
+                     $widget['class'] = implode(' ', array_merge(explode(' ', (string) theme_get_array_value($widget, 'class', '')), ['kuj-footer-text']));
                  }
                  if (false === $centred && $is_simple) {
                      $centred = true;

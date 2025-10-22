@@ -25,13 +25,13 @@ global $post;
 if (!empty($post->post_parent)) {
 	$return_link = '<a href="' . get_permalink($post->post_parent) . '" title="' . esc_attr(sprintf(__('Return to %s', THEME_NS), strip_tags(get_the_title($post->post_parent)))) . '" rel="gallery">'
 			. sprintf(__('<span class="meta-nav">&larr;</span> %s', THEME_NS), get_the_title($post->post_parent)) . '</a>';
-	theme_post_navigation(array('next_link' => $return_link));
+	theme_post_navigation(['next_link' => $return_link]);
 }
 
 theme_ob_start();
 
 if (wp_attachment_is_image()) {
-	$attachments = array_values(get_children(array('post_parent' => $post->post_parent, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order ID')));
+	$attachments = array_values(get_children(['post_parent' => $post->post_parent, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => 'ASC', 'orderby' => 'menu_order ID']));
 	foreach ($attachments as $k => $attachment) {
 		if ($attachment->ID == $post->ID) {
       break;
@@ -57,7 +57,7 @@ if (wp_attachment_is_image()) {
 		<a href="<?php echo $next_attachment_url; ?>" title="<?php echo esc_attr(strip_tags(get_the_title())); ?>" rel="attachment">
 			<?php
 			$attachment_size = apply_filters('attachment_size', 600);
-			echo wp_get_attachment_image($post->ID, array($attachment_size, 9999)); // filterable image width with, essentially, no limit for image height.
+			echo wp_get_attachment_image($post->ID, [$attachment_size, 9999]); // filterable image width with, essentially, no limit for image height.
 			?>
 		</a>
 	</p>
@@ -87,16 +87,9 @@ if (wp_attachment_is_image()) {
 }
 
 /* Display navigation to next/previous pages when applicable */
-theme_post_navigation(array('wrap' => false, 'prev_link' => theme_get_next_image_link(false), 'next_link' => theme_get_previous_image_link(false)));
+theme_post_navigation(['wrap' => false, 'prev_link' => theme_get_next_image_link(false), 'next_link' => theme_get_previous_image_link(false)]);
 
 theme_post_wrapper(
-		array(
-			'id' => theme_get_post_id(),
-			'class' => theme_get_post_class(),
-			'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>',
-			'heading' => theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_article_title_tag'),
-			'before' => theme_get_metadata_icons('date,author,edit', 'header'),
-			'content' => theme_ob_get_clean(),
-		)
+		['id' => theme_get_post_id(), 'class' => theme_get_post_class(), 'title' => '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>', 'heading' => theme_get_option('theme_' . (is_home() ? 'posts' : 'single') . '_article_title_tag'), 'before' => theme_get_metadata_icons('date,author,edit', 'header'), 'content' => theme_ob_get_clean()]
 );
 ?>

@@ -1,6 +1,6 @@
 <?php
 global $theme_sidebars;
-$places = array();
+$places = [];
 foreach ($theme_sidebars as $sidebar){
     if ($sidebar['group'] !== 'bottom') {
         continue;

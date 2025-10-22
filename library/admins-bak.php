@@ -32,7 +32,7 @@ function theme_print_options(): void {
 		}
 		echo '<form method="post" id="theme_options_form">' . "\n";
 		$in_form_table = false;
-		$dependent_fields = array();
+		$dependent_fields = [];
 		foreach ($theme_options as $op) {
 			$id = theme_get_array_value($op, 'id');
 			$type = theme_get_array_value($op, 'type');
@@ -41,7 +41,7 @@ function theme_print_options(): void {
 			$script = theme_get_array_value($op, 'script');
 			$depend = theme_get_array_value($op, 'depend');
 			if($depend) {
-				$dependent_fields[] = array($depend, $id);
+				$dependent_fields[] = [$depend, $id];
 			}
 			if ($type == 'heading') {
 				if ($in_form_table) {
@@ -209,9 +209,7 @@ add_action('admin_head', 'theme_header_image_script_control');
 function theme_custom_header_L10n(&$scripts): void {
 	global $pagenow;
 	if (('media-upload.php' == $pagenow || 'async-upload.php' == $pagenow) && isset($_GET['type']) && 'image_header' === $_GET['type']) {
-		$scripts->localize( 'common', 'themeL10n', array(
-			'changeHeaderImage' => __('Change Header Image', THEME_NS)
-		));
+		$scripts->localize( 'common', 'themeL10n', ['changeHeaderImage' => __('Change Header Image', THEME_NS)]);
 	}
 }
 

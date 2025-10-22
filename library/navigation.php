@@ -6,7 +6,7 @@ function theme_get_menu($args = '') {
     if ( null !== $nav_menu ) {
         return $nav_menu;
     }
-	$args = wp_parse_args($args, array('source' => 'Pages', 'depth' => 0, 'menu' => null, 'class' => ''));
+	$args = wp_parse_args($args, ['source' => 'Pages', 'depth' => 0, 'menu' => null, 'class' => '']);
 	$source = &$args['source'];
 	$menu = &$args['menu'];
 	$class = &$args['class'];
@@ -16,7 +16,7 @@ function theme_get_menu($args = '') {
 			$menu = wp_get_nav_menu_object($location);
 			if ($menu) {
 				$source = 'Custom Menu';
-				$class = implode(' ', array($class, 'menu-' . $menu->term_id));
+				$class = implode(' ', [$class, 'menu-' . $menu->term_id]);
 			}
 		}
 	}
@@ -24,9 +24,9 @@ function theme_get_menu($args = '') {
 	if ($source == 'Custom Menu' && $menu != null) {
         $nav_menu = theme_get_list_menu($args);
 	} elseif ($source == 'Pages') {
-        $nav_menu = theme_get_list_pages(array_merge(array('sort_column' => 'menu_order, post_title'), $args));
+        $nav_menu = theme_get_list_pages(array_merge(['sort_column' => 'menu_order, post_title'], $args));
     } elseif ($source == 'Categories') {
-        $nav_menu = theme_get_list_categories(array_merge(array('title_li' => false), $args));
+        $nav_menu = theme_get_list_categories(array_merge(['title_li' => false], $args));
 	}
 
     return apply_filters( 'wp_nav_menu', $nav_menu, $args );
@@ -34,7 +34,7 @@ function theme_get_menu($args = '') {
 
 /* custom menu */
 
-function theme_get_list_menu(array $args = array()) {
+function theme_get_list_menu(array $args = []) {
 	global $wp_query;
 	$menu_items = wp_get_nav_menu_items($args['menu']->term_id);
 	if (empty($menu_items)) {
@@ -45,7 +45,7 @@ function theme_get_list_menu(array $args = array()) {
 	$queried_object_id = (int) $wp_query->queried_object_id;
 	$active_ID = null;
 
-	$IdToKey = array();
+	$IdToKey = [];
 	foreach ((array) $menu_items as $key => $menu_item) {
 		$IdToKey[$menu_item->ID] = $key;
 		if ($menu_item->object_id == $queried_object_id &&
@@ -71,30 +71,18 @@ function theme_get_list_menu(array $args = array()) {
 		$current_ID = $current_item->menu_item_parent;
 	}
 
-	$sorted_menu_items = array();
+	$sorted_menu_items = [];
 	foreach ((array) $menu_items as $menu_item) {
 		$sorted_menu_items[$menu_item->menu_order] = wp_setup_nav_menu_item($menu_item);
 	}
 
-	$items = array();
+	$items = [];
 	foreach ($sorted_menu_items as $el) {
 		$id = $el->db_id;
 		$title = $el->title;
-		$classes = empty($el->classes) ? array() : (array) $el->classes;
+		$classes = empty($el->classes) ? [] : (array) $el->classes;
 		$active = in_array('active', $classes);
-		$items[] = new theme_MenuItem(array(
-					'id' => $id,
-					'active' => $active,
-					'attr' => array(
-						'title' => strip_tags(empty($el->attr_title) ? $title : $el->attr_title),
-						'target' => $el->target,
-						'rel' => $el->xfn,
-						'href' => $el->url,
-						'class' => implode(' ', apply_filters('nav_menu_css_class', array_filter($classes), $el))
-					),
-					'title' => $title,
-					'parent' => $el->menu_item_parent
-				));
+		$items[] = new theme_MenuItem(['id' => $id, 'active' => $active, 'attr' => ['title' => strip_tags(empty($el->attr_title) ? $title : $el->attr_title), 'target' => $el->target, 'rel' => $el->xfn, 'href' => $el->url, 'class' => implode(' ', apply_filters('nav_menu_css_class', array_filter($classes), $el))], 'title' => $title, 'parent' => $el->menu_item_parent]);
 	}
 
 	$walker = new theme_MenuWalker();
@@ -106,14 +94,14 @@ function theme_get_list_menu(array $args = array()) {
 
 /* pages */
 
-function theme_get_list_pages($args = array()): string {
+function theme_get_list_pages($args = []): string {
 	global $wp_query;
 	$pages = get_pages($args);
 	if (empty($pages)) {
      return '';
  }
 
-	$IdToKey = array();
+	$IdToKey = [];
 	$currentID = null;
 
 	foreach ($pages as $key => $page) {
@@ -137,7 +125,7 @@ function theme_get_list_pages($args = array()): string {
 			$frontPage->post_parent = 0;
 			$frontPage->menu_order = 0;
 			array_unshift($pages, $frontPage);
-			$IdToKey = array();
+			$IdToKey = [];
 			foreach ($pages as $key => $page) {
 				$IdToKey[$page->ID] = $key;
 			}
@@ -152,7 +140,7 @@ function theme_get_list_pages($args = array()): string {
 	}
 
 	$active_Id = $currentID;
-	$activeIDs = array();
+	$activeIDs = [];
 	while ($active_Id && isset($IdToKey[$active_Id])) {
 		$active = $pages[$IdToKey[$active_Id]];
 		if ($active && $active->post_status == 'private') {
@@ -162,16 +150,11 @@ function theme_get_list_pages($args = array()): string {
 		$active_Id = $active->post_parent;
 	}
 
-	$items = array();
+	$items = [];
 	if (theme_get_option('theme_menu_showHome') && ('page' != get_option('show_on_front') || (!get_option('page_on_front') && !get_option('page_for_posts')))) {
 		$title = theme_get_option('theme_menu_homeCaption');
 		$active = is_home();
-		$items[] = new theme_MenuItem(array(
-					'id' => 'home',
-					'active' => $active,
-					'attr' => array('class' => ($active ? 'active' : ''), 'href' => get_home_url(), 'title' => strip_tags((string) $title)),
-					'title' => $title,
-				));
+		$items[] = new theme_MenuItem(['id' => 'home', 'active' => $active, 'attr' => ['class' => ($active ? 'active' : ''), 'href' => get_home_url(), 'title' => strip_tags((string) $title)], 'title' => $title]);
 	}
 	foreach ($pages as $page) {
 		$id = $page->ID;
@@ -182,13 +165,7 @@ function theme_get_list_pages($args = array()): string {
 		if ($separator) {
 			$href = '#';
 		}
-		$items[] = new theme_MenuItem(array(
-					'id' => $id,
-					'active' => $active,
-					'attr' => array('class' => ($active ? 'active' : ''), 'href' => $href, 'title' => strip_tags($title)),
-					'title' => $title,
-					'parent' => $page->post_parent
-				));
+		$items[] = new theme_MenuItem(['id' => $id, 'active' => $active, 'attr' => ['class' => ($active ? 'active' : ''), 'href' => $href, 'title' => strip_tags($title)], 'title' => $title, 'parent' => $page->post_parent]);
 	}
 	$walker = new theme_MenuWalker();
 	return $walker->walk($items, $args);
@@ -196,13 +173,13 @@ function theme_get_list_pages($args = array()): string {
 
 /* categories */
 
-function theme_get_list_categories($args = array()): string {
+function theme_get_list_categories($args = []): string {
 	global $wp_query, $post;
 	$categories = &get_categories($args);
 	if (empty($categories)) {
      return '';
  }
-	$IdToKey = array();
+	$IdToKey = [];
 	foreach ($categories as $key => $category) {
 		$IdToKey[$category->term_id] = $key;
 	}
@@ -217,19 +194,13 @@ function theme_get_list_categories($args = array()): string {
 			$activeIDs = array_merge($activeIDs, theme_get_category_branch($cat->term_id, $categories, $IdToKey));
 		}
 	}
-	$items = array();
+	$items = [];
 	foreach ($categories as $category) {
 		$id = $category->term_id;
 		$title = $category->name;
-		$desc = (($category->description) ? $category->description : sprintf(__('View all posts in %s', THEME_NS), $title));
+		$desc = ($category->description ?: sprintf(__('View all posts in %s', THEME_NS), $title));
 		$active = in_array($id, $activeIDs);
-		$items[] = new theme_MenuItem(array(
-					'id' => $id,
-					'active' => $active,
-					'attr' => array('class' => ($active ? 'active' : ''), 'href' => get_category_link($id), 'title' => strip_tags($desc)),
-					'title' => $title,
-					'parent' => $category->parent
-				));
+		$items[] = new theme_MenuItem(['id' => $id, 'active' => $active, 'attr' => ['class' => ($active ? 'active' : ''), 'href' => get_category_link($id), 'title' => strip_tags($desc)], 'title' => $title, 'parent' => $category->parent]);
 	}
 	$walker = new theme_MenuWalker();
 	return $walker->walk($items, $args);
@@ -240,7 +211,7 @@ function theme_get_list_categories($args = array()): string {
  * @return mixed[]
  */
 function theme_get_category_branch($id, array $categories, $IdToKey): array {
-	$result = array();
+	$result = [];
 	while ($id && isset($IdToKey[$id])) {
 		$result[] = $id;
 		$id = $categories[$IdToKey[$id]]->parent;
@@ -258,14 +229,8 @@ class theme_MenuItem {
 	public $attr;
 	public $title;
 
-	function theme_MenuItem($args = ''): void {
-		$args = wp_parse_args($args, array(
-			'id' => '',
-			'active' => false,
-			'parent' => 0,
-			'attr' => '',
-			'title' => '',
-				)
+	function __construct($args = ''): void {
+		$args = wp_parse_args($args, ['id' => '', 'active' => false, 'parent' => 0, 'attr' => '', 'title' => '']
 		);
 		$this->id = $args['id'];
 		$this->active = $args['active'];
@@ -283,7 +248,7 @@ class theme_MenuItem {
 			$title = theme_trim_long_str(strip_tags((string) $title), theme_get_option($level == 0 ? 'theme_menu_trim_len' : 'theme_submenu_trim_len'));
 		}
 		return str_repeat("\t", $level + 1)
-				. '<li' . theme_prepare_attr(array('class' => $class)) . '>'
+				. '<li' . theme_prepare_attr(['class' => $class]) . '>'
 				. '<a' . theme_prepare_attr($this->attr) . '>'
 				. $title
 				. '</a>' . "\n";
@@ -299,23 +264,23 @@ class theme_MenuItem {
 
 class theme_MenuWalker {
 
-	public $child_Ids = array();
-	public $IdToKey = array();
+	public $child_Ids = [];
+	public $IdToKey = [];
 	public $level = 0;
 	public $items;
 	public $depth;
 	public $args;
 	public $class;
 
-	function walk($items = array(), $args = ''): string {
-		$args = wp_parse_args($args, array('depth' => 0, 'class' => ''));
+	function walk($items = [], $args = ''): string {
+		$args = wp_parse_args($args, ['depth' => 0, 'class' => '']);
 		$this->items = &$items;
 		$this->depth = (int) $args['depth'];
 		$this->class = $args['class'];
 		foreach ($items as $key => $item) {
 			$this->IdToKey[$item->id] = $key;
 			if (!isset($this->child_Ids[$item->parent])) {
-				$this->child_Ids[$item->parent] = array();
+				$this->child_Ids[$item->parent] = [];
 			}
 			$parent = $item->parent;
 			if (!$parent) {
@@ -332,7 +297,7 @@ class theme_MenuWalker {
 		if (theme_is_empty_html($output)) {
       return '';
   }
-		return "\n" . '<ul' . theme_prepare_attr(array('class' => $this->class)) . '>' . "\n" . $output . '</ul>' . "\n";
+		return "\n" . '<ul' . theme_prepare_attr(['class' => $this->class]) . '>' . "\n" . $output . '</ul>' . "\n";
 	}
 
 	function display(&$output, $child_Ids): void {
@@ -351,7 +316,7 @@ class theme_MenuWalker {
 					&& (count($this->child_Ids[$item->id]) > 0)
 			) {
 				$this->level++;
-				$output .= str_repeat("\t", $this->level) . '<ul' . theme_prepare_attr(array('class' => ($item->active ? 'active' : ''))) . '>' . "\n";
+				$output .= str_repeat("\t", $this->level) . '<ul' . theme_prepare_attr(['class' => ($item->active ? 'active' : '')]) . '>' . "\n";
 				$this->display($output, $this->child_Ids[$item->id]);
 				$output .= str_repeat("\t", $this->level) . '</ul>' . "\n";
 				$this->level--;
@@ -367,13 +332,13 @@ function theme_get_pages($pages) {
      return $pages;
  }
 
-	$excluded_ids = array();
+	$excluded_ids = [];
 	foreach ($pages as $page) {
 		if (!theme_get_meta_option($page->ID, 'theme_show_in_menu')) {
 			$excluded_ids[] = $page->ID;
 		}
 	}
-	$excluded_parent_ids = array();
+	$excluded_parent_ids = [];
 	foreach ($pages as $page) {
 
 		$title = theme_get_meta_option($page->ID, 'theme_title_in_menu');

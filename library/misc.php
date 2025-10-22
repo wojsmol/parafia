@@ -14,7 +14,7 @@ function theme_strpos($source, $target): int|false {
 	return strpos((string) $source, (string) $target);
 }
 
-function theme_get_array_value($arr = array(), $key = null, $def = false) {
+function theme_get_array_value($arr = [], $key = null, $def = false) {
 	if (is_array($arr) && @isset($arr[$key])) {
 		return $arr[$key];
 	}
@@ -22,7 +22,7 @@ function theme_get_array_value($arr = array(), $key = null, $def = false) {
 }
 
 function theme_is_empty_html($str): bool {
-	return (!is_string($str) || theme_strlen(str_replace(array('&nbsp;', ' ', "\n", "\r", "\t"), '', $str)) == 0);
+	return (!is_string($str) || theme_strlen(str_replace(['&nbsp;', ' ', "\n", "\r", "\t"], '', $str)) == 0);
 }
 
 
@@ -68,7 +68,7 @@ function theme_is_current_url($url): bool {
 	return ($cur == $url);
 }
 
-function theme_prepare_attr($attr = array()): string {
+function theme_prepare_attr($attr = []): string {
 	$attr = wp_parse_args($attr);
 	if (count($attr) == 0) {
      return '';
@@ -98,8 +98,8 @@ function theme_highlight_excerpt($search_query, $text): string {
 	// collect ranges of text around each keyword, starting/ending at
 	// spaces.  If the sum of all fragments is too short, we look for
 	// second occurrences.
-	$ranges = array();
-	$included = array();
+	$ranges = [];
+	$included = [];
 	$length = 0;
 	while ($length < 256 && count($workkeys)) {
 		foreach ($workkeys as $k => $key) {
@@ -161,7 +161,7 @@ function theme_highlight_excerpt($search_query, $text): string {
 
 	// Now we collapse overlapping text ranges into one. The sorting makes
 	// it O(n).
-	$newranges = array();
+	$newranges = [];
 	foreach ($ranges as $from2 => $to2) {
 		if (!isset($from1)) {
 			$from1 = $from2;
@@ -179,7 +179,7 @@ function theme_highlight_excerpt($search_query, $text): string {
 	$newranges[$from1] = $to1;
 
 	// Fetch text
-	$out = array();
+	$out = [];
 	foreach ($newranges as $from => $to)
 		$out[] = substr($text, $from, $to - $from);
 

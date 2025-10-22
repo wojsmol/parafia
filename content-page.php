@@ -22,16 +22,7 @@
  */
 global $post;
 theme_post_wrapper(
-		array(
-			'id' => theme_get_post_id(),
-			'class' => theme_get_post_class(),
-			'thumbnail' => theme_get_post_thumbnail(array('auto'=>false)),
-			'title' => theme_get_meta_option($post->ID, 'theme_show_page_title') ? get_the_title() : '',
-			'heading' => theme_get_option('theme_single_article_title_tag'),
-			'before' => theme_get_metadata_icons('', 'header'),
-			'content' => theme_get_content(),
-			'comments' => theme_get_comments()
-		)
+		['id' => theme_get_post_id(), 'class' => theme_get_post_class(), 'thumbnail' => theme_get_post_thumbnail(['auto'=>false]), 'title' => theme_get_meta_option($post->ID, 'theme_show_page_title') ? get_the_title() : '', 'heading' => theme_get_option('theme_single_article_title_tag'), 'before' => theme_get_metadata_icons('', 'header'), 'content' => theme_get_content(), 'comments' => theme_get_comments()]
 );
 ?>
 

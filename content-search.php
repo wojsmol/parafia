@@ -22,14 +22,6 @@
  */
 global $post;
 theme_post_wrapper(
-		array(
-			'id' => theme_get_post_id(),
-			'class' => theme_get_post_class(),
-			'title' => theme_get_meta_option($post->ID, 'theme_show_post_title') ? '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>' : '',
-			'heading' => theme_get_option('theme_posts_article_title_tag'),
-			'before' => theme_get_metadata_icons('date,author,edit', 'header'),
-			'content' => theme_highlight_excerpt(get_search_query(), theme_get_content()),
-			'after' => theme_get_metadata_icons('category,tag', 'footer')
-		)
+		['id' => theme_get_post_id(), 'class' => theme_get_post_class(), 'title' => theme_get_meta_option($post->ID, 'theme_show_post_title') ? '<a href="' . get_permalink($post->ID) . '" rel="bookmark" title="' . strip_tags(get_the_title()) . '">' . get_the_title() . '</a>' : '', 'heading' => theme_get_option('theme_posts_article_title_tag'), 'before' => theme_get_metadata_icons('date,author,edit', 'header'), 'content' => theme_highlight_excerpt(get_search_query(), theme_get_content()), 'after' => theme_get_metadata_icons('category,tag', 'footer')]
 );
 ?>

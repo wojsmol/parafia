@@ -55,30 +55,7 @@ function theme_get_smilies_js(): string|false {
 }
 
 function theme_get_smilies(): string {
-	$smilies = array(
-		':?:' => 'icon_question.gif',
-		':razz:' => 'icon_razz.gif',
-		':sad:' => 'icon_sad.gif',
-		':evil:' => 'icon_evil.gif',
-		':!:' => 'icon_exclaim.gif',
-		':smile:' => 'icon_smile.gif',
-		':oops:' => 'icon_redface.gif',
-		':grin:' => 'icon_biggrin.gif',
-		':eek:' => 'icon_surprised.gif',
-		':shock:' => 'icon_eek.gif',
-		':???:' => 'icon_confused.gif',
-		':cool:' => 'icon_cool.gif',
-		':lol:' => 'icon_lol.gif',
-		':mad:' => 'icon_mad.gif',
-		':twisted:' => 'icon_twisted.gif',
-		':roll:' => 'icon_rolleyes.gif',
-		':wink:' => 'icon_wink.gif',
-		':idea:' => 'icon_idea.gif',
-		':arrow:' => 'icon_arrow.gif',
-		':neutral:' => 'icon_neutral.gif',
-		':cry:' => 'icon_cry.gif',
-		':mrgreen:' => 'icon_mrgreen.gif'
-	);
+	$smilies = [':?:' => 'icon_question.gif', ':razz:' => 'icon_razz.gif', ':sad:' => 'icon_sad.gif', ':evil:' => 'icon_evil.gif', ':!:' => 'icon_exclaim.gif', ':smile:' => 'icon_smile.gif', ':oops:' => 'icon_redface.gif', ':grin:' => 'icon_biggrin.gif', ':eek:' => 'icon_surprised.gif', ':shock:' => 'icon_eek.gif', ':???:' => 'icon_confused.gif', ':cool:' => 'icon_cool.gif', ':lol:' => 'icon_lol.gif', ':mad:' => 'icon_mad.gif', ':twisted:' => 'icon_twisted.gif', ':roll:' => 'icon_rolleyes.gif', ':wink:' => 'icon_wink.gif', ':idea:' => 'icon_idea.gif', ':arrow:' => 'icon_arrow.gif', ':neutral:' => 'icon_neutral.gif', ':cry:' => 'icon_cry.gif', ':mrgreen:' => 'icon_mrgreen.gif'];
 	$result = '';
 	foreach ($smilies as $tag => $icon) {
 		$result .= '<a href="javascript:grin(\'' . $tag . '\')"><img class="wp-smiley" src="' . site_url() . '/wp-includes/images/smilies/' . $icon . '" alt="" /></a>';

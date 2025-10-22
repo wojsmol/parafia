@@ -13,8 +13,7 @@ get_header();
 			<?php
 			if (have_posts()) {
 				theme_post_wrapper(
-						array('content' => '<h3 class="search-title">' . sprintf(__('<hr /> Wyszukane treści dla wyrażenia: <strong> %s </strong>', THEME_NS), '<span class="search-query-string">' . get_search_query() . '</span>') . '</h3><hr />'
-						)
+						['content' => '<h3 class="search-title">' . sprintf(__('<hr /> Wyszukane treści dla wyrażenia: <strong> %s </strong>', THEME_NS), '<span class="search-query-string">' . get_search_query() . '</span>') . '</h3><hr />']
 				);
 				/* Display navigation to next/previous pages when applicable */
 				// if (theme_get_option('theme_top_posts_navigation')) {
@@ -31,10 +30,7 @@ get_header();
 				}
 			} else {
 				theme_404_content(
-						array(
-							'error_title' => __('Niczego nie znaleziono', THEME_NS),
-							'error_message' => __('Przykro nam, ale nie znaleziono szukanej treści na tej stronie. Spróbuj wyszukać ponownie, używając innych słów kluczowych.', THEME_NS)
-						)
+						['error_title' => __('Niczego nie znaleziono', THEME_NS), 'error_message' => __('Przykro nam, ale nie znaleziono szukanej treści na tej stronie. Spróbuj wyszukać ponownie, używając innych słów kluczowych.', THEME_NS)]
 				);
 			}
 			?>

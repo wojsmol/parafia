@@ -46,11 +46,11 @@ if (!comments_open()) {
 }
 /* comment form */
 theme_ob_start();
-$args = array();
+$args = [];
 if (theme_get_option('theme_comment_use_smilies')) {
 
 	function theme_comment_form_field_comment(string $form_field): string {
-    locate_template(array('library/smiley.php'), true);
+    locate_template(['library/smiley.php'], true);
 		return theme_get_smilies_js() . '<p class="smilies">' . theme_get_smilies() . '</p>' . $form_field;
 	}
 
@@ -58,6 +58,6 @@ if (theme_get_option('theme_comment_use_smilies')) {
 }
 comment_form();
 echo str_replace(
-    array('id="respond"', '<h3', 'id="reply-title"', '</h3>', 'logged-in-as', 'type="submit"'), 
-    array('id="respond" class="kuj-commentsform"', '<h2', 'id="reply-title" class="kuj-postheader"', '</h2>', 'kuj-postcontent logged-in-as', 'class="kuj-button" type="submit"'), 
+    ['id="respond"', '<h3', 'id="reply-title"', '</h3>', 'logged-in-as', 'type="submit"'], 
+    ['id="respond" class="kuj-commentsform"', '<h2', 'id="reply-title" class="kuj-postheader"', '</h2>', 'kuj-postcontent logged-in-as', 'class="kuj-button" type="submit"'], 
     theme_ob_get_clean());

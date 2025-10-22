@@ -21,10 +21,7 @@ get_header();
 				/* Display navigation to next/previous posts when applicable */
 				if (theme_get_option('theme_bottom_single_navigation')) {
 					theme_post_navigation(
-							array(
-								'prev_link' => theme_get_previous_post_link('&laquo; %link'),
-								'next_link' => theme_get_next_post_link('%link &raquo;')
-							)
+							['prev_link' => theme_get_previous_post_link('&laquo; %link'), 'next_link' => theme_get_next_post_link('%link &raquo;')]
 					);
 				}
 			} else {

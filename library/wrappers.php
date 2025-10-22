@@ -11,17 +11,7 @@ function theme_wrapper($style, $args): void {
 }
 
 function theme_post_wrapper($args = ''): void {
-	$args = wp_parse_args($args, array(
-			'id'        => '',
-			'class'     => '',
-			'title'     => '',
-			'heading'   => 'h2',
-			'thumbnail' => '',
-			'before'    => '',
-			'content'   => '',
-			'after'     => '',
-			'comments'     => ''
-		)
+	$args = wp_parse_args($args, ['id'        => '', 'class'     => '', 'title'     => '', 'heading'   => 'h2', 'thumbnail' => '', 'before'    => '', 'content'   => '', 'after'     => '', 'comments'     => '']
 	);
 	extract($args);
 	if (theme_is_empty_html($title) && theme_is_empty_html($content)) {
@@ -49,13 +39,7 @@ if (!theme_is_empty_html($title)) {
 }
 
 function theme_simple_wrapper($args = ''): void {
-	$args = wp_parse_args($args, array(
-			'id'      => '',
-			'class'   => '',
-			'title'   => '',
-			'heading' => 'div',
-			'content' => '',
-		)
+	$args = wp_parse_args($args, ['id'      => '', 'class'   => '', 'title'   => '', 'heading' => 'div', 'content' => '']
 	);
 	extract($args);
 	if (theme_is_empty_html($title) && theme_is_empty_html($content)) {
@@ -76,13 +60,7 @@ function theme_simple_wrapper($args = ''): void {
 }
 
 function theme_block_wrapper($args): void {
-	$args = wp_parse_args($args, array(
-			'id'      => '',
-			'class'   => '',
-			'title'   => '',
-			'heading' => 'div',
-			'content' => '',
-		)
+	$args = wp_parse_args($args, ['id'      => '', 'class'   => '', 'title'   => '', 'heading' => 'div', 'content' => '']
 	);
 	extract($args);
 	if (theme_is_empty_html($title) && theme_is_empty_html($content)) {
@@ -129,13 +107,7 @@ EOL;
 
 
 function theme_vmenu_wrapper($args): void {
-	$args = wp_parse_args($args, array(
-			'id'      => '',
-			'class'   => '',
-			'title'   => '',
-			'heading' => 'div',
-			'content' => '',
-		)
+	$args = wp_parse_args($args, ['id'      => '', 'class'   => '', 'title'   => '', 'heading' => 'div', 'content' => '']
 	);
 	extract($args);
 	if (theme_is_empty_html($title) && theme_is_empty_html($content)) {
