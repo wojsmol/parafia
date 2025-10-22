@@ -40,14 +40,12 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
           
-      - name: Update Rector to latest version
-        run: composer update rector/rector --with-all-dependencies
 
       - name: Instalacja zależności Composera
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      #- name: Uruchomienie Rectora i refaktoryzacja kodu
-        #run: ./vendor/bin/rector process
+      - name: Uruchomienie Rectora i refaktoryzacja kodu
+        run: ./vendor/bin/rector process
 
       - name: Automatyczne commitowanie poprawek Rectora
         uses: stefanzweifel/git-auto-commit-action@v5
