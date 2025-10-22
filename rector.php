@@ -3,43 +3,39 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\Core\ValueObject\PhpVersion;
-use Rector\Renaming\Rector\FuncCall\RenameFunctionRector;
-use Rector\CodingStyle\Rector\FuncCall\FullyQualifiedStrictTypesRector;
 use Rector\Set\ValueObject\SetList;
+use Rector\Renaming\Rector\FuncCall\RenameFunctionRector;
+use Rector\Transform\Rector\Function_\FunctionToMethodRector;
+use Rector\Transform\ValueObject\FunctionToMethod;
 
 return static function (RectorConfig $rectorConfig): void {
-    // 1️⃣ Skany folderów
-    $rectorConfig->paths([
-        __DIR__ . '/library',
-        __DIR__ . '/functions.php',
-        __DIR__ . '/index.php',
+    // 1️⃣ Zestawy standardowe PHP
+    $rectorConfig->sets([
+        SetList::PHP_84,
     ]);
 
-    // 2️⃣ Wykluczenia
+    // 2️⃣ Ścieżki do skanowania
+    $rectorConfig->paths([
+        __DIR__,               // główny folder szablonu
+        __DIR__ . '/library',  // library
+    ]);
+
+    // 3️⃣ Ignorowanie katalogów nie zawierających PHP
     $rectorConfig->skip([
         __DIR__ . '/vendor',
         __DIR__ . '/node_modules',
+        __DIR__ . '/assets',
         __DIR__ . '/tests',
     ]);
 
-    // 3️⃣ Docelowa wersja PHP
-    $rectorConfig->phpVersion(PhpVersion::PHP_84);
-
-    // 4️⃣ Używamy standardowych zestawów
-    $rectorConfig->sets([
-        SetList::PHP_74,
-        SetList::PHP_80,
-        SetList::CODE_QUALITY,
-        SetList::DEAD_CODE,
-        SetList::TYPE_DECLARATION,
+    // 4️⃣ Dodanie backslash dla globalnych funkcji WP
+    $rectorConfig->ruleWithConfiguration(RenameFunctionRector::class, [
+        'wp_*' => '\\wp_*',
     ]);
 
-    // 5️⃣ Namespacing bibliotek
-    $rectorConfig->autoloadPaths([
-        __DIR__ . '/library',
+    // 5️⃣ Przerabianie funkcji w library na klasy
+    $rectorConfig->ruleWithConfiguration(FunctionToMethodRector::class, [
+        new FunctionToMethod('library', 'Parafia\\Library'),
+        // Można dodać kolejne foldery jeśli będą funkcje do konwersji
     ]);
-
-    // 6️⃣ Globalne funkcje WP: doda \ do każdej wywoływanej w namespace
-    $rectorConfig->rule(FullyQualifiedStrictTypesRector::class);
 };
